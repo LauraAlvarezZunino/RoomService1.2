@@ -14,6 +14,11 @@ class Reserva
     private $costo;
 
     private $usuarioDni;
+   
+    private $notificaciones = [];
+
+    
+
 
     public function __construct($id, $fechaInicio, $fechaFin, Habitacion $habitacion, $costo, $usuarioDni)
     {
@@ -24,6 +29,21 @@ class Reserva
         $this->costo = $costo;
         $this->usuarioDni = $usuarioDni;
     }
+    public function setNotificacion($mensaje)
+    {
+        $this->notificaciones[] = $mensaje;
+    }
+
+    public function getNotificaciones()
+    {
+        return $this->notificaciones;
+    }
+
+    public function limpiarNotificaciones()
+    {
+        $this->notificaciones = [];
+    }
+
 
     // Getters y Setters
     public function getId()

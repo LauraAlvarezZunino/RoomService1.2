@@ -12,7 +12,6 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     // Verificar si la reserva existe y si el usuario es el dueño, a menos que sea un administrador
     if (! $reserva || (! $esAdmin && $reserva->getUsuarioDni() !== $dniGuardado)) {
         echo "Reserva no encontrada o no tiene permisos para modificar esta reserva.\n";
-
         return;
     }
 
@@ -24,13 +23,13 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
 
     echo 'Ingrese la nueva fecha de inicio (YYYY-MM-DD) o deje vacío para mantener la actual: ';
     $nuevaFechaInicio = trim(fgets(STDIN));
-    $nuevaFechaInicio = $nuevaFechaInicio ?: $reserva->getFechaInicio();  // ?: operador de fusión de valores nulos  
+    $nuevaFechaInicio = $nuevaFechaInicio ?: $reserva->getFechaInicio();
 
     echo 'Ingrese la nueva fecha de fin (YYYY-MM-DD) o deje vacío para mantener la actual: ';
     $nuevaFechaFin = trim(fgets(STDIN));
     $nuevaFechaFin = $nuevaFechaFin ?: $reserva->getFechaFin();
 
-       $fechaActual = date('Y-m-d');
+    $fechaActual = date('Y-m-d');
 
     if ($nuevaFechaInicio !== $reserva->getFechaInicio()) {  // Solo validar si se cambió la fecha
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $nuevaFechaInicio)) {
@@ -58,18 +57,15 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
             return;
         }
     }
-    
     echo 'Ingrese el nuevo número de habitación o deje vacío para mantener la actual: ';
     $nuevoNumeroHabitacion = trim(fgets(STDIN));
-    if ($nuevoNumeroHabitacion) {
-        $nuevaHabitacion = $habitacionesGestor->buscarHabitacionPorNumero($nuevoNumeroHabitacion);
-        if (! $nuevaHabitacion) {
-            echo "Habitación no encontrada.\n";
+    $nuevaHabitacion = $nuevoNumeroHabitacion
+        ? $habitacionesGestor->buscarHabitacionPorNumero($nuevoNumeroHabitacion)
+        : $reserva->getHabitacion();
 
-            return;
-        }
-    } else {
-        $nuevaHabitacion = $reserva->getHabitacion();
+    if (! $nuevaHabitacion) {
+        echo "Habitación no encontrada.\n";
+        return;
     }
 
     $nuevoCosto = calcularCostoReserva($nuevaFechaInicio, $nuevaFechaFin, $nuevaHabitacion->getPrecio());
@@ -80,35 +76,51 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     $reserva->setHabitacion($nuevaHabitacion);
     $reserva->setCosto($nuevoCosto);
 
+    // Agregar notificación para el usuario
+    if ($esAdmin) {
+        $notificacion = "Tu reserva (ID: {$reserva->getId()}) fue modificada por un administrador.";
+        $reserva->setNotificacion($notificacion);
+    }
+
     $reservasGestor->guardarEnJSON();
     echo 'Reserva actualizada correctamente. Nuevo costo: $' . $nuevoCosto . "\n";
 }
 
-function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
-{
-    global $dniGuardado;
-    $reservas = $reservasGestor->obtenerReservas();
-    $tieneReservas = false;
-
-    foreach ($reservas as $reserva) {
-        // Si no es administrador, mostramos solo las reservas del usuario actual
-        if ($esAdmin || ($usuario && $reserva->getUsuarioDni() === $dniGuardado)) {
-            echo "-------------------------\n";
-            echo 'ID: ' . $reserva->getId() . "\n";
-            echo 'Fecha Inicio: ' . $reserva->getFechaInicio() . "\n";
-            echo 'Fecha Fin: ' . $reserva->getFechaFin() . "\n";
-            echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
-            echo 'Costo Total: $' . $reserva->getCosto() . "\n";
-            echo 'Usuario DNI: ' . $reserva->getUsuarioDni() . "\n";
-            echo "-------------------------\n";
-            $tieneReservas = true;
+    function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
+    {
+        global $dniGuardado;
+        $reservas = $reservasGestor->obtenerReservas();
+        $tieneReservas = false;
+    
+        foreach ($reservas as $reserva) {
+            if ($esAdmin || ($usuario && $reserva->getUsuarioDni() === $dniGuardado)) {
+                echo "-------------------------\n";
+                echo 'ID: ' . $reserva->getId() . "\n";
+                echo 'Fecha Inicio: ' . $reserva->getFechaInicio() . "\n";
+                echo 'Fecha Fin: ' . $reserva->getFechaFin() . "\n";
+                echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
+                echo 'Costo Total: $' . $reserva->getCosto() . "\n";
+    
+                // Mostrar notificaciones
+                $notificaciones = $reserva->getNotificaciones();
+                if (!empty($notificaciones)) {
+                    echo "Notificaciones:\n";
+                    foreach ($notificaciones as $notificacion) {
+                        echo "- " . $notificacion . "\n";
+                    }
+                    $reserva->limpiarNotificaciones(); // Limpiar después de mostrarlas
+                }
+                echo "-------------------------\n";
+                $tieneReservas = true;
+            }
+        }
+    
+        if (! $tieneReservas) {
+            echo $esAdmin ? "No hay reservas registradas.\n" : "No tienes reservas registradas.\n";
         }
     }
+    
 
-    if (! $tieneReservas) {
-        echo $esAdmin ? "No hay reservas registradas.\n" : "No tienes reservas registradas.\n";   //condición ? valorSiVerdadero : valorSiFalso;
-    }
-}
 
 function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
 {
