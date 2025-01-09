@@ -130,6 +130,7 @@ class ReservaControlador
                 'habitacion' => $reserva->getHabitacion()->getNumero(), // guardamos solo el número de la habitación
                 'costo' => $reserva->getCosto(),
                 'usuarioDni' => $reserva->getUsuarioDni(), 
+                "notificaciones" => $reserva->getNotificaciones()
             ];
         }
         
@@ -141,23 +142,26 @@ class ReservaControlador
     public function cargarDesdeJSON()
     {
         if (file_exists($this->reservaJson)) {
-            $json = file_get_contents($this->reservaJson); //lee contenido del archvo
-            $data = json_decode($json, true); //convierte el json en array
-
+            $json = file_get_contents($this->reservaJson); // Lee contenido del archivo
+            $data = json_decode($json, true); // Convierte el JSON en un array
+    
             if (isset($data['reservas'])) {
                 $reservasArray = $data['reservas'];
             } else {
                 $reservasArray = []; // Inicializa como un array vacío si no existe
             }
-
+    
             foreach ($reservasArray as $reservaData) {
-                $usuarioDni = isset($reservaData['usuarioDni']) ? $reservaData['usuarioDni'] : null;// si isset true carga usuarioDni, false es null
+                $usuarioDni = isset($reservaData['usuarioDni']) ? $reservaData['usuarioDni'] : null; // Asigna usuarioDni si existe, de lo contrario null
                 $habitacion = $this->habitacionesGestor->buscarHabitacionPorNumero($reservaData['habitacion']);
+                
                 if (null === $habitacion) {
                     echo "Advertencia: La habitación número {$reservaData['habitacion']} no fue encontrada. Se omitirá esta reserva.\n";
-                    continue;// omite la reserva que no tiene habitacion y continua por la sig
+                    continue; // Omite la reserva que no tiene habitación y continúa con la siguiente
                 }
-
+    
+                $notificaciones = isset($reservaData['notificaciones']) ? $reservaData['notificaciones'] : []; // Inicializa notificaciones si no existen
+    
                 $reserva = new Reserva(
                     $reservaData['id'],
                     $reservaData['fechaInicio'],
@@ -166,15 +170,22 @@ class ReservaControlador
                     $reservaData['costo'],
                     $usuarioDni
                 );
+    
+                // Agregar notificaciones a la reserva
+                foreach ($notificaciones as $notificacion) {
+                    $reserva->setNotificacion($notificacion); // Asumiendo que existe un método agregarNotificacion
+                }
+    
                 $this->reservas[] = $reserva;
-
-                // Asegurar que el ID este actualizado
+    
+                // Asegurar que el ID esté actualizado
                 if ($this->id < $reserva->getId() + 1) {
                     $this->id = $reserva->getId() + 1;
                 }
             }
         }
     }
+<<<<<<< HEAD
 
     public function sugerirFechasAlternativas($habitacionNumero, $fechaInicio, $fechaFin)
 {
@@ -222,4 +233,7 @@ public function sugerirHabitacionesAlternativas($tipo, $fechaInicio, $fechaFin)
 }
 
 
+=======
+    
+>>>>>>> 4a38443473c266147d20961a59dbdfba2f84ecb0
 }

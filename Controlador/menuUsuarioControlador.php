@@ -122,7 +122,7 @@ function solicitarFechasReserva()
 }
 
 //usuario
-function mostrarDatosUsuario($usuariosGestor)
+function mostrarDatosUsuario()
 {
     global $dniGuardado;
 
