@@ -157,12 +157,12 @@ function registrarse($usuariosGestor)
     }
 
     while (true) {
-        echo 'Ingrese la dirección del usuario: ';
+        echo 'Ingrese la clave del usuario: ';
         $direccion = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z0-9\s]+$/", $direccion)) { 
+        if (preg_match("/^[a-zA-Z0-9]+$/", $direccion)) { 
             break; 
         } else {
-            echo "La dirección debe contener solo letras, números y espacios. Por favor, intente nuevamente.\n";
+            echo "La clave debe contener solo letras, números. Por favor, intente nuevamente.\n";
         }
     }
 
