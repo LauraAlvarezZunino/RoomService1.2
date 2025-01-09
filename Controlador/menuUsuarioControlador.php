@@ -2,25 +2,59 @@
 
 function crearReserva($dniGuardado, $habitacionesGestor, $reservasGestor)
 {
-    global $dniGuardado;
+    global $dniGuardado; // Declarar la variable global
 
     $tipoHabitacion = solicitarTipoHabitacion();
     $habitacionesDisponibles = $habitacionesGestor->buscarPorTipo($tipoHabitacion);
 
-    if (! empty($habitacionesDisponibles)) {
-        mostrarHabitacionesDisponibles($habitacionesDisponibles);
-        $habitacionSeleccionada = seleccionarHabitacion($habitacionesDisponibles);
+    if (empty($habitacionesDisponibles)) {
+        echo "No se encontraron habitaciones disponibles del tipo solicitado.\n";
+        return; // Salir si no hay habitaciones disponibles
+    }
 
-        if ($habitacionSeleccionada) {
-            [$fechaInicio, $fechaFin] = solicitarFechasReserva();
-            $costo = calcularCostoReserva($fechaInicio, $fechaFin, $habitacionSeleccionada->getPrecio());
-            $reservaId = $reservasGestor->generarNuevoId();
-            $reserva = new Reserva($reservaId, $fechaInicio, $fechaFin, $habitacionSeleccionada, $costo, $dniGuardado);
+    mostrarHabitacionesDisponibles($habitacionesDisponibles);
+    $habitacionSeleccionada = null;
 
-            $reservasGestor->agregarReserva($reserva);
+    while (!$habitacionSeleccionada) {
+        // Permitir al usuario seleccionar una habitación
+        echo "Ingrese el número de habitación: ";
+        $numeroHabitacion = trim(fgets(STDIN));
+        $habitacionSeleccionada = $habitacionesGestor->buscarHabitacionPorNumero($numeroHabitacion);
+
+        if (!$habitacionSeleccionada || strtolower($habitacionSeleccionada->getTipo()) !== strtolower($tipoHabitacion)) {
+            echo "Número de habitación no válido o no coincide con el tipo seleccionado. Intente nuevamente.\n";
+            $habitacionSeleccionada = null; // Reiniciar para volver a pedir
         }
-    } else {
-        echo "No se encontró una habitación disponible de ese tipo.\n";
+    }
+
+    while (true) {
+        // Solicitar fechas de reserva
+        [$fechaInicio, $fechaFin] = solicitarFechasReserva();
+        $costo = calcularCostoReserva($fechaInicio, $fechaFin, $habitacionSeleccionada->getPrecio());
+        $reservaId = $reservasGestor->generarNuevoId();
+        $reserva = new Reserva($reservaId, $fechaInicio, $fechaFin, $habitacionSeleccionada, $costo, $dniGuardado);
+
+        // Intentar agregar la reserva
+        $reservaExitosa = $reservasGestor->agregarReserva($reserva);
+        if ($reservaExitosa) {
+            echo "Reserva realizada con éxito.\n";
+            return; // Salir tras el éxito
+        } else {
+            echo "La habitación seleccionada no está disponible en las fechas indicadas. Por favor, ingrese un nuevo número de habitación.\n";
+            $habitacionSeleccionada = null; // Reiniciar la selección de habitación
+
+            // Permitir al usuario seleccionar otra habitación
+            while (!$habitacionSeleccionada) {
+                echo "Ingrese el número de habitación: ";
+                $numeroHabitacion = trim(fgets(STDIN));
+                $habitacionSeleccionada = $habitacionesGestor->buscarHabitacionPorNumero($numeroHabitacion);
+
+                if (!$habitacionSeleccionada || strtolower($habitacionSeleccionada->getTipo()) !== strtolower($tipoHabitacion)) {
+                    echo "Número de habitación no válido o no coincide con el tipo seleccionado. Intente nuevamente.\n";
+                    $habitacionSeleccionada = null;
+                }
+            }
+        }
     }
 }
 
