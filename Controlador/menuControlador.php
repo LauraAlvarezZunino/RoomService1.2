@@ -170,10 +170,14 @@ function modificarUsuario($usuario, $esAdministrador = false)
     echo 'Introduce el nuevo teléfono (deja vacío para mantener el actual): ';
     $telefono = trim(fgets(STDIN));
 
+    echo 'Introduce la nueva clave (deja vacío para mantener actual): ';
+    $clave = trim(fgets(STDIN));
+
     $nuevosDatos = [
         'nombre' => $nombreApellido ?: null,
         'email' => $email ?: null,
         'telefono' => $telefono ?: null,
+        'clave' => $clave ?: null,
     ];
 
     if ($usuariosGestor->actualizarUsuario($id, $nuevosDatos)) {
