@@ -27,7 +27,7 @@ function menuUsuario()
         case 2:
             echo 'Ingrese su DNI para continuar: ';
             $dni = trim(fgets(STDIN));
-            
+            $dniGuardado= $dni;
             echo 'Ingrese su clave para continuar: ';
             $clave = trim(fgets(STDIN));
             
