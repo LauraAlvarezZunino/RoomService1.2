@@ -12,10 +12,10 @@ class UsuarioControlador
         $this->cargarDesdeJSON();
     }
 
-    public function crearUsuario($nombreApellido, $dni, $email, $telefono)
+    public function crearUsuario($nombreApellido, $dni, $email, $telefono, $clave)
     {
         $nuevoId = $this->generarNuevoId();
-        $usuario = new Usuario($nuevoId, $nombreApellido, $dni, $email, $telefono);
+        $usuario = new Usuario($nuevoId, $nombreApellido, $dni, $email, $telefono, $clave);
         $this->usuarios[] = $usuario;
         $this->guardarEnJSON();
     }
@@ -122,6 +122,7 @@ class UsuarioControlador
             'dni' => $usuario->getDni(),
             'email' => $usuario->getEmail(),
             'telefono' => $usuario->getTelefono(),
+            'clave' => $usuario->getClave(),
         ];
     }
     
@@ -144,7 +145,8 @@ class UsuarioControlador
                         $usuarioData['nombre'],
                         $usuarioData['dni'],
                         $usuarioData['email'],
-                        $usuarioData['telefono']
+                        $usuarioData['telefono'],
+                        $usuarioData['clave'],
                     );
                     $this->usuarios[] = $usuario;
                 }

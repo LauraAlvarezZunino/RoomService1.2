@@ -11,14 +11,17 @@ class Usuario
     private $email;
 
     private $telefono;
+    
+    private $clave;
 
-    public function __construct($id, $nombreApellido, $dni, $email, $telefono)
+    public function __construct($id, $nombreApellido, $dni, $email, $telefono,$clave)
     {
         $this->id = $id;
         $this->nombreApellido = $nombreApellido;
         $this->dni = $dni;
         $this->email = $email;
         $this->telefono = $telefono;
+        $this->clave = $clave;
     }
 
 
@@ -71,6 +74,16 @@ class Usuario
     public function setTelefono($telefono)
     {
         $this->telefono = $telefono;
+    }
+
+    public function getClave()
+    {
+        return $this->clave;
+    }
+
+    public function setClave($clave)
+    {
+        $this->clave = $clave;
     }
 
     public function __toString()
