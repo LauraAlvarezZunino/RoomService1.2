@@ -27,15 +27,22 @@ function menuUsuario()
         case 2:
             echo 'Ingrese su DNI para continuar: ';
             $dni = trim(fgets(STDIN));
-            $dniGuardado = $dni;
+            
+            echo 'Ingrese su clave para continuar: ';
+            $clave = trim(fgets(STDIN));
+            
+            // Busca al usuario por DNI y valida que coincida la clave
             $usuario = $usuariosGestor->obtenerUsuarioPorDni($dni);
-            if ($usuario) {
-                menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor,$usuariosGestor);
+            
+            if ($usuario && $usuario->getClave() === $clave) {
+                // Si se encuentra un usuario y la clave coincide, accede al menú
+                menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor);
             } else {
-                echo "DNI no encontrado. Inténtelo de nuevo.\n";
-                menuUsuario();
+                // Si no se encuentra o la clave no coincide, muestra un mensaje de error
+                echo "DNI o clave incorrectos. Inténtelo de nuevo.\n";
+                menuUsuario(); // Redirige al menú principal
             }
-            break;
+            
 
         default:
             echo "Opción no válida. Inténtelo de nuevo.\n";
