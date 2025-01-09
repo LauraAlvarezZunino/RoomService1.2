@@ -6,15 +6,17 @@
             "fechaFin": "2024-11-27",
             "habitacion": "10",
             "costo": 68000,
-            "usuarioDni": "111111"
+            "usuarioDni": "111111",
+            "notificaciones": []
         },
         {
             "id": 13,
-            "fechaInicio": "2024-11-29",
-            "fechaFin": "2024-11-30",
+            "fechaInicio": "2025-01-20",
+            "fechaFin": "2025-01-25",
             "habitacion": "4",
-            "costo": 40000,
-            "usuarioDni": "12345678"
+            "costo": 200000,
+            "usuarioDni": "12345678",
+            "notificaciones": []
         },
         {
             "id": 14,
@@ -22,15 +24,19 @@
             "fechaFin": "2024-11-27",
             "habitacion": "5",
             "costo": 245000,
-            "usuarioDni": "111111"
+            "usuarioDni": "111111",
+            "notificaciones": []
         },
         {
             "id": 15,
             "fechaInicio": "2025-01-20",
-            "fechaFin": "2025-01-25",
+            "fechaFin": "2025-01-28",
             "habitacion": "10",
-            "costo": 170000,
-            "usuarioDni": "36608470"
+            "costo": 272000,
+            "usuarioDni": "36608470",
+            "notificaciones": [
+                "Tu reserva (ID: 15) fue modificada por un administrador."
+            ]
         }
     ]
 }
