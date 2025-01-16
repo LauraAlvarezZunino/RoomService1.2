@@ -50,7 +50,7 @@ class ReservaControlador
                 } else {
                     $habitacionesCercanas = $this->sugerirHabitacionesCercanas($habitacion->getTipo(), $reserva->getFechaInicio(), $reserva->getFechaFin());
                     if (!empty($habitacionesCercanas)) {
-                        echo "No hay habitaciones disponibles para las fechas solicitadas. Habitaciones disponibles en fechas cercanas:\n";
+                        echo "No hay habitaciones disponibles para las fechas solicitadas.\n", "Habitaciones disponibles en fechas cercanas:\n";
                         foreach ($habitacionesCercanas as $cercana) {
                             echo "- Habitación Número: " . $cercana['habitacion']->getNumero() . ", Tipo: " . $cercana['habitacion']->getTipo() . ", Precio: " . $cercana['habitacion']->getPrecio() . ", Disponible desde: " . $cercana['fechaInicio']. "\n";
                         }
