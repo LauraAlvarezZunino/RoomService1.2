@@ -11,10 +11,10 @@ class Usuario
     private $email;
 
     private $telefono;
-    
+
     private $clave;
 
-    public function __construct($id, $nombreApellido, $dni, $email, $telefono,$clave)
+    public function __construct($id, $nombreApellido, $dni, $email, $telefono, $clave)
     {
         $this->id = $id;
         $this->nombreApellido = $nombreApellido;
@@ -90,5 +90,4 @@ class Usuario
     {
         return 'ID: ' . $this->id . ', Nombre: ' . $this->nombreApellido . ', DNI: ' . $this->dni . ', Email: ' . $this->email . ', Teléfono: ' . $this->telefono;
     }
-
-}    
+}

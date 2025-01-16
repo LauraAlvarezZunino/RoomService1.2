@@ -9,15 +9,15 @@ class Reserva
 
     private $fechaFin;
 
-    private Habitacion $habitacion; 
+    private Habitacion $habitacion;
 
     private $costo;
 
     private $usuarioDni;
-   
+
     private $notificaciones = [];
 
-    
+
 
 
     public function __construct($id, $fechaInicio, $fechaFin, Habitacion $habitacion, $costo, $usuarioDni)

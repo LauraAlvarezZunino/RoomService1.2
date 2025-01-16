@@ -18,7 +18,6 @@ class HabitacionControlador
     {
         $this->habitaciones[] = $habitacion;
         $this->guardarEnJSON();
-
     }
 
     public function obtenerHabitaciones()
@@ -43,7 +42,7 @@ class HabitacionControlador
         $tipo = strtolower($tipo); // starlower pasa a minuscula
 
         foreach ($this->habitaciones as $habitacion) {
-            if (strtolower($habitacion->getTipo()) == $tipo) { 
+            if (strtolower($habitacion->getTipo()) == $tipo) {
                 $resultados[] = $habitacion;
             }
         }
@@ -77,19 +76,19 @@ class HabitacionControlador
     }
 
     public function eliminarHabitacion($numero)
-{
-    foreach ($this->habitaciones as $indice => $habitacion) {
-        if ($habitacion->getNumero() == $numero) {
-            unset($this->habitaciones[$indice]);
-            $this->habitaciones = array_values($this->habitaciones); // Reacomoda los indices del array  
-            $this->guardarEnJSON(); 
+    {
+        foreach ($this->habitaciones as $indice => $habitacion) {
+            if ($habitacion->getNumero() == $numero) {
+                unset($this->habitaciones[$indice]);
+                $this->habitaciones = array_values($this->habitaciones); // Reacomoda los indices del array  
+                $this->guardarEnJSON();
 
-            return true;
+                return true;
+            }
         }
-    }
 
-    return false; 
-}
+        return false;
+    }
 
     // Json
 

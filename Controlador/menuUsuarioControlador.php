@@ -26,11 +26,11 @@ function crearReserva($dniGuardado, $habitacionesGestor, $reservasGestor)
 
 function calcularCostoReserva($fechaInicio, $fechaFin, $precioPorNoche)
 {
-    $fechaInicio = new DateTime($fechaInicio);// datetime clase de php 
+    $fechaInicio = new DateTime($fechaInicio); // datetime clase de php 
     $fechaFin = new DateTime($fechaFin);
     $diferencia = $fechaInicio->diff($fechaFin);
 
-    return $diferencia->days * $precioPorNoche; 
+    return $diferencia->days * $precioPorNoche;
 }
 function solicitarTipoHabitacion()
 {
@@ -65,7 +65,7 @@ function solicitarFechasReserva()
         $fechaInicio = trim(fgets(STDIN));
         $fechaActual = date('Y-m-d');
 
-    
+
         if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaInicio) && strtotime($fechaInicio) > strtotime($fechaActual)) {
             break;
         } else {
@@ -107,10 +107,10 @@ function mostrarDatosUsuario()
     }
 }
 
-function registrarse($usuariosGestor) 
+function registrarse($usuariosGestor)
 {
     echo "=== Registro de Usuario ===\n";
-    
+
     while (true) {
         echo 'Ingrese el nombre y apellido del usuario: ';
         $nombreApellido = trim(fgets(STDIN));
@@ -140,7 +140,7 @@ function registrarse($usuariosGestor)
         echo 'Ingrese el email del usuario: ';
         $email = trim(fgets(STDIN));
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            break; 
+            break;
         } else {
             echo "Por favor, ingrese un email válido.\n";
         }
@@ -150,7 +150,7 @@ function registrarse($usuariosGestor)
         echo 'Ingrese el teléfono del usuario: ';
         $telefono = trim(fgets(STDIN));
         if (preg_match("/^\d+$/", $telefono)) {
-            break; 
+            break;
         } else {
             echo "El teléfono debe contener solo números. Por favor, intente nuevamente.\n";
         }
@@ -159,8 +159,8 @@ function registrarse($usuariosGestor)
     while (true) {
         echo 'Ingrese la clave del usuario: ';
         $direccion = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z0-9]+$/", $direccion)) { 
-            break; 
+        if (preg_match("/^[a-zA-Z0-9]+$/", $direccion)) {
+            break;
         } else {
             echo "La clave debe contener solo letras, números. Por favor, intente nuevamente.\n";
         }
@@ -171,4 +171,3 @@ function registrarse($usuariosGestor)
 
     menuUsuario(); // vuelve al menú principal
 }
-
