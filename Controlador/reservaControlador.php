@@ -185,7 +185,6 @@ class ReservaControlador
             }
         }
     }
-<<<<<<< HEAD
 
     public function sugerirFechasAlternativas($habitacionNumero, $fechaInicio, $fechaFin)
 {
@@ -230,10 +229,4 @@ public function sugerirHabitacionesAlternativas($tipo, $fechaInicio, $fechaFin)
         }
     }
     return $habitacionesDisponibles;
-}
-
-
-=======
-    
->>>>>>> 4a38443473c266147d20961a59dbdfba2f84ecb0
 }
