@@ -26,51 +26,41 @@ class ReservaControlador
     }
 
     public function agregarReserva(Reserva $reserva)
-{
-    $habitacion = $this->habitacionesGestor->buscarHabitacionPorNumero($reserva->getHabitacion()->getNumero());
+    {
+        $habitacion = $this->habitacionesGestor->buscarHabitacionPorNumero($reserva->getHabitacion()->getNumero());
 
-    if (!$habitacion) {
-        echo "La habitación seleccionada no existe.\n";
-        return false;
-    }
-
-    foreach ($this->reservas as $existeReserva) {
-        if ($existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
-            !($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
-              $reserva->getFechaInicio() > $existeReserva->getFechaFin())) {
-
-            echo "La habitación número {$habitacion->getNumero()} ya está reservada en las fechas solicitadas ({$reserva->getFechaInicio()} a {$reserva->getFechaFin()}).\n";
-
-            // Sugerir fechas alternativas
-            $fechasAlternativas = $this->sugerirFechasAlternativas($habitacion->getNumero(), $reserva->getFechaInicio(), $reserva->getFechaFin());
-            if ($fechasAlternativas) {
-                echo "Fechas alternativas sugeridas para la misma habitación:\n";
-                echo "Desde: {$fechasAlternativas[0]} Hasta: {$fechasAlternativas[1]}.\n";
-            } else {
-                echo "No se encontraron fechas alternativas para esta habitación.\n";
-            }
-
-            // Sugerir habitaciones alternativas
-            $habitacionesAlternativas = $this->sugerirHabitacionesAlternativas($habitacion->getTipo(), $reserva->getFechaInicio(), $reserva->getFechaFin());
-            if (!empty($habitacionesAlternativas)) {
-                echo "Habitaciones alternativas disponibles para las fechas solicitadas:\n";
-                foreach ($habitacionesAlternativas as $altHabitacion) {
-                    echo $altHabitacion . "\n";
-                }
-            } else {
-                echo "No se encontraron habitaciones alternativas para las fechas solicitadas.\n";
-            }
-
-            return false; // No se creó la reserva
+        if (!$habitacion) {
+            echo "La habitación seleccionada no existe.\n";
+            return false;
         }
-    }
 
-    // Crear la reserva si no hay conflictos
-    echo "Reserva creada con éxito.\n";
-    $this->reservas[] = $reserva;
-    $this->guardarEnJSON();
-    return true;
-}
+        foreach ($this->reservas as $existeReserva) {
+            if ($existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+                !($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
+                  $reserva->getFechaInicio() > $existeReserva->getFechaFin())) {
+
+                echo "La habitación número {$habitacion->getNumero()} ya está reservada en las fechas solicitadas ({$reserva->getFechaInicio()} a {$reserva->getFechaFin()}).\n";
+
+                $habitacionesAlternativas = $this->sugerirHabitacionesAlternativas($habitacion->getTipo(), $reserva->getFechaInicio(), $reserva->getFechaFin());
+                if (!empty($habitacionesAlternativas)) {
+                    echo "Habitaciones alternativas disponibles para las fechas solicitadas:\n";
+                    foreach ($habitacionesAlternativas as $altHabitacion) {
+                        echo "- Habitación Número: " . $altHabitacion->getNumero() . ", Tipo: " . $altHabitacion->getTipo() . ", Precio: " . $altHabitacion->getPrecio() . "\n";
+                    }
+                } else {
+                    echo "No se encontraron habitaciones alternativas para las fechas solicitadas.\n";
+                }
+
+                return false; // No se creó la reserva
+            }
+        }
+
+        // Crear la reserva si no hay conflictos
+        //echo "Reserva creada con éxito.\n";
+        $this->reservas[] = $reserva;
+        $this->guardarEnJSON();
+        return true;
+    }
 
     public function obtenerReservas()
     {
@@ -186,47 +176,26 @@ class ReservaControlador
         }
     }
 
-    public function sugerirFechasAlternativas($habitacionNumero, $fechaInicio, $fechaFin)
-{
-    $ocupada = false;
-    $reservas = $this->obtenerReservas();
-    
-    foreach ($reservas as $reserva) {
-        if ($reserva->getHabitacion()->getNumero() == $habitacionNumero) {
-            if (!($fechaFin < $reserva->getFechaInicio() || $fechaInicio > $reserva->getFechaFin())) {
-                $ocupada = true;
-                break;
+    public function sugerirHabitacionesAlternativas($tipo, $fechaInicio, $fechaFin)
+    {
+        $habitacionesDisponibles = [];
+
+        foreach ($this->habitacionesGestor->buscarPorTipo($tipo) as $habitacion) {
+            $disponible = true;
+
+            foreach ($this->reservas as $reserva) {
+                if ($reserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+                    !($fechaFin < $reserva->getFechaInicio() || $fechaInicio > $reserva->getFechaFin())) {
+                    $disponible = false;
+                    break;
+                }
             }
-        }
-    }
 
-    if ($ocupada) {
-        // Busca la primera fecha disponible posterior al rango actual
-        $nuevaFechaInicio = date('Y-m-d', strtotime($fechaFin . ' +1 day'));
-        $nuevaFechaFin = date('Y-m-d', strtotime($nuevaFechaInicio . ' +3 days')); // Ejemplo: 3 días después
-        return [$nuevaFechaInicio, $nuevaFechaFin];
-    }
-    return null; // No hay conflictos
-}
-
-public function sugerirHabitacionesAlternativas($tipo, $fechaInicio, $fechaFin)
-{
-    $habitacionesDisponibles = [];
-
-    foreach ($this->habitacionesGestor->buscarPorTipo($tipo) as $habitacion) {
-        $disponible = true;
-
-        foreach ($this->reservas as $reserva) {
-            if ($reserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
-                !($fechaFin < $reserva->getFechaInicio() || $fechaInicio > $reserva->getFechaFin())) {
-                $disponible = false;
-                break;
+            if ($disponible) {
+                $habitacionesDisponibles[] = $habitacion;
             }
         }
 
-        if ($disponible) {
-            $habitacionesDisponibles[] = $habitacion;
-        }
+        return $habitacionesDisponibles;
     }
-    return $habitacionesDisponibles;
 }

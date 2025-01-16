@@ -37,6 +37,24 @@
             "notificaciones": [
                 "Tu reserva (ID: 15) fue modificada por un administrador."
             ]
+        },
+        {
+            "id": 16,
+            "fechaInicio": "2025-01-25",
+            "fechaFin": "2025-01-26",
+            "habitacion": "1",
+            "costo": 600000,
+            "usuarioDni": "111111",
+            "notificaciones": []
+        },
+        {
+            "id": 18,
+            "fechaInicio": "2025-01-25",
+            "fechaFin": "2025-01-30",
+            "habitacion": "5",
+            "costo": 175000,
+            "usuarioDni": "111111",
+            "notificaciones": []
         }
     ]
 }
