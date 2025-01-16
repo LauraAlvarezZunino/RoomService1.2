@@ -36,21 +36,21 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
             echo "Por favor, ingrese una fecha válida.\n";
             return;
         }
-    
+
         // Comparar con la fecha actual
         if (strtotime($nuevaFechaInicio) < strtotime($fechaActual)) {
             echo "Por favor, ingrese una fecha válida.\n";
             return;
         }
     }
-    
+
     // Validar formato de fecha de fin y que sea posterior a la fecha de inicio
     if ($nuevaFechaFin !== $reserva->getFechaFin()) {  // Solo validar si se cambió la fecha
         if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $nuevaFechaFin)) {
             echo "Por favor, ingrese una fecha válida.\n";
             return;
         }
-    
+
         // Comparar que la fecha de fin sea posterior a la de inicio
         if (strtotime($nuevaFechaFin) < strtotime($nuevaFechaInicio)) {
             echo "Por favor, ingrese una fecha válida.\n";
@@ -86,40 +86,40 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     echo 'Reserva actualizada correctamente. Nuevo costo: $' . $nuevoCosto . "\n";
 }
 
-    function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
-    {
-        global $dniGuardado;
-        $reservas = $reservasGestor->obtenerReservas();
-        $tieneReservas = false;
-    
-        foreach ($reservas as $reserva) {
-            if ($esAdmin || ($usuario && $reserva->getUsuarioDni() === $dniGuardado)) {
-                echo "-------------------------\n";
-                echo 'ID: ' . $reserva->getId() . "\n";
-                echo 'Fecha Inicio: ' . $reserva->getFechaInicio() . "\n";
-                echo 'Fecha Fin: ' . $reserva->getFechaFin() . "\n";
-                echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
-                echo 'Costo Total: $' . $reserva->getCosto() . "\n";
-    
-                // Mostrar notificaciones
-                $notificaciones = $reserva->getNotificaciones();
-                if (!empty($notificaciones)) {
-                    echo "Notificaciones:\n";
-                    foreach ($notificaciones as $notificacion) {
-                        echo "- " . $notificacion . "\n";
-                    }
-                    $reserva->limpiarNotificaciones(); // Limpiar después de mostrarlas
+function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
+{
+    global $dniGuardado;
+    $reservas = $reservasGestor->obtenerReservas();
+    $tieneReservas = false;
+
+    foreach ($reservas as $reserva) {
+        if ($esAdmin || ($usuario && $reserva->getUsuarioDni() === $dniGuardado)) {
+            echo "-------------------------\n";
+            echo 'ID: ' . $reserva->getId() . "\n";
+            echo 'Fecha Inicio: ' . $reserva->getFechaInicio() . "\n";
+            echo 'Fecha Fin: ' . $reserva->getFechaFin() . "\n";
+            echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
+            echo 'Costo Total: $' . $reserva->getCosto() . "\n";
+
+            // Mostrar notificaciones
+            $notificaciones = $reserva->getNotificaciones();
+            if (!empty($notificaciones)) {
+                echo "Notificaciones:\n";
+                foreach ($notificaciones as $notificacion) {
+                    echo "- " . $notificacion . "\n";
                 }
-                echo "-------------------------\n";
-                $tieneReservas = true;
+                $reserva->limpiarNotificaciones(); // Limpiar después de mostrarlas
             }
-        }
-    
-        if (! $tieneReservas) {
-            echo $esAdmin ? "No hay reservas registradas.\n" : "No tienes reservas registradas.\n";
+            echo "-------------------------\n";
+            $tieneReservas = true;
         }
     }
-    
+
+    if (! $tieneReservas) {
+        echo $esAdmin ? "No hay reservas registradas.\n" : "No tienes reservas registradas.\n";
+    }
+}
+
 
 
 function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)

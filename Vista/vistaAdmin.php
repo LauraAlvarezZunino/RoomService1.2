@@ -129,7 +129,8 @@ function menuAdminReservas()
                     echo $reserva . "\n";
                 }
                 break;
-            case 2: modificarReserva($reservasGestor, $habitacionesGestor, true);
+            case 2:
+                modificarReserva($reservasGestor, $habitacionesGestor, true);
                 break;
             case 3:
                 eliminarReserva($reservasGestor, $habitacionesGestor, true);

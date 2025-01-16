@@ -90,21 +90,21 @@ class UsuarioControlador
         return false;
     }
 
- 
+
     public function eliminarUsuario($id)
-{
-    foreach ($this->usuarios as $indice => $usuario) {
-        if ($usuario->getId() == $id) {
-            unset($this->usuarios[$indice]);
-            $this->usuarios = array_values($this->usuarios); 
-            $this->guardarEnJSON(); 
+    {
+        foreach ($this->usuarios as $indice => $usuario) {
+            if ($usuario->getId() == $id) {
+                unset($this->usuarios[$indice]);
+                $this->usuarios = array_values($this->usuarios);
+                $this->guardarEnJSON();
 
-            return true;
+                return true;
+            }
         }
-    }
 
-    return false; 
-}
+        return false;
+    }
 
     private function guardarEnJSON()
     {
@@ -113,7 +113,7 @@ class UsuarioControlador
         file_put_contents($this->usuarioJson, $jsonUsuario);
     }
 
-    
+
     private function usuarioToArray($usuario)
     {
         return [
@@ -125,7 +125,7 @@ class UsuarioControlador
             'clave' => $usuario->getClave(),
         ];
     }
-    
+
     private function cargarDesdeJSON()
     {
         if (file_exists($this->usuarioJson)) {
@@ -138,7 +138,7 @@ class UsuarioControlador
             if (isset($data['usuarios'])) {
                 $usuariosArray = $data['usuarios'];
 
-              
+
                 foreach ($usuariosArray as $usuarioData) {
                     $usuario = new Usuario(
                         $usuarioData['id'],
