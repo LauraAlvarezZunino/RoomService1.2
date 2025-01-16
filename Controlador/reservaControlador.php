@@ -27,10 +27,41 @@ class ReservaControlador
 
     public function agregarReserva(Reserva $reserva)
     {
-        // trae la habitación asociada a la reserva desde el archivo JSON
         $habitacion = $this->habitacionesGestor->buscarHabitacionPorNumero($reserva->getHabitacion()->getNumero());
 
+        if (!$habitacion) {
+            echo "La habitación seleccionada no existe.\n";
+            return false;
+        }
+
         foreach ($this->reservas as $existeReserva) {
+
+            if ($existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+                !($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
+                  $reserva->getFechaInicio() > $existeReserva->getFechaFin())) {
+
+                echo "La habitación número {$habitacion->getNumero()} ya está reservada en las fechas solicitadas ({$reserva->getFechaInicio()} a {$reserva->getFechaFin()}).\n";
+
+                $habitacionesAlternativas = $this->sugerirHabitacionesAlternativas($habitacion->getTipo(), $reserva->getFechaInicio(), $reserva->getFechaFin());
+                if (!empty($habitacionesAlternativas)) {
+                    echo "Habitaciones alternativas disponibles para las fechas solicitadas:\n";
+                    foreach ($habitacionesAlternativas as $altHabitacion) {
+                        echo "- Habitación Número: " . $altHabitacion->getNumero() . ", Tipo: " . $altHabitacion->getTipo() . ", Precio: " . $altHabitacion->getPrecio() . "\n";
+                    }
+                } else {
+                    $habitacionesCercanas = $this->sugerirHabitacionesCercanas($habitacion->getTipo(), $reserva->getFechaInicio(), $reserva->getFechaFin());
+                    if (!empty($habitacionesCercanas)) {
+                        echo "No hay habitaciones disponibles para las fechas solicitadas.\n", "Habitaciones disponibles en fechas cercanas:\n";
+                        foreach ($habitacionesCercanas as $cercana) {
+                            echo "- Habitación Número: " . $cercana['habitacion']->getNumero() . ", Tipo: " . $cercana['habitacion']->getTipo() . ", Precio: " . $cercana['habitacion']->getPrecio() . ", Disponible desde: " . $cercana['fechaInicio']. "\n";
+                        }
+                    } else {
+                        echo "No se encontraron habitaciones disponibles en fechas cercanas.\n";
+                    }
+                }
+
+                return false; // No se creó la reserva
+
             if (
                 $existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
                 ! ($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
@@ -42,17 +73,19 @@ class ReservaControlador
             }
         }
 
-        echo "Reserva creada con éxito.\n";
-
+        // Crear la reserva si no hay conflictos
         $this->reservas[] = $reserva;
         $this->guardarEnJSON();
+        return true;
     }
 
-    public function obtenerReservas()
+    public function sugerirHabitacionesAlternativas($tipo, $fechaInicio, $fechaFin)
     {
-        return $this->reservas;
-    }
+        $habitacionesDisponibles = [];
 
+        foreach ($this->habitacionesGestor->buscarPorTipo($tipo) as $habitacion) {
+            $disponible = true;
+          
     public function modificarReserva($id, $nuevaFechaInicio, $nuevaFechaFin, $nuevaHabitacion, $nuevoCosto)
     {
         $reserva = $this->buscarReservaPorId($id);
@@ -66,31 +99,71 @@ class ReservaControlador
             echo "Reserva no encontrada.\n";
         }
     }
+          
 
-    public function eliminarReserva($id)
-    {
-        foreach ($this->reservas as $indice => $reserva) {
-            if ($reserva->getId() == $id) {
-                unset($this->reservas[$indice]);
-                $this->reservas = array_values($this->reservas); // reposicionamos el array para que no quede un lugar vacio
-                $this->guardarEnJSON();
+            foreach ($this->reservas as $reserva) {
+                if ($reserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+                    !($fechaFin < $reserva->getFechaInicio() || $fechaInicio > $reserva->getFechaFin())) {
+                    $disponible = false;
+                    break;
+                }
+            }
 
-                return true;
+            if ($disponible) {
+                $habitacionesDisponibles[] = $habitacion;
             }
         }
 
-        return false;
+        return $habitacionesDisponibles;
     }
 
-    public function buscarReservaPorId($id)
+    public function sugerirHabitacionesCercanas($tipo, $fechaInicio, $fechaFin)
     {
-        foreach ($this->reservas as $reserva) {
-            if ($reserva->getId() == $id) {
-                return $reserva;
+        $habitacionesCercanas = [];
+
+        foreach ($this->habitacionesGestor->buscarPorTipo($tipo) as $habitacion) {
+            $fechasOcupadas = [];
+
+            foreach ($this->reservas as $reserva) {
+                if ($reserva->getHabitacion()->getNumero() == $habitacion->getNumero()) {
+                    $fechasOcupadas[] = [
+                        'inicio' => $reserva->getFechaInicio(),
+                        'fin' => $reserva->getFechaFin()
+                    ];
+                }
+            }
+
+            usort($fechasOcupadas, function ($a, $b) {
+                return strtotime($a['inicio']) - strtotime($b['inicio']);
+            });
+
+            $fechaInicioDisponible = $fechaInicio;
+            $fechaFinDisponible = $fechaFin;
+
+            foreach ($fechasOcupadas as $rango) {
+                if (strtotime($fechaInicioDisponible) < strtotime($rango['inicio'])) {
+                    $fechaFinDisponible = date('Y-m-d', strtotime($rango['inicio'] . ' -1 day'));
+                    break;
+                } elseif (strtotime($fechaInicioDisponible) <= strtotime($rango['fin'])) {
+                    $fechaInicioDisponible = date('Y-m-d', strtotime($rango['fin'] . ' +1 day'));
+                }
+            }
+
+            if (strtotime($fechaInicioDisponible) <= strtotime($fechaFin)) {
+                $habitacionesCercanas[] = [
+                    'habitacion' => $habitacion,
+                    'fechaInicio' => $fechaInicioDisponible,
+                    'fechaFin' => $fechaFinDisponible
+                ];
             }
         }
 
-        return null;
+        return $habitacionesCercanas;
+    }
+
+    public function obtenerReservas()
+    {
+        return $this->reservas;
     }
     public function limpiarNotificacionesPorUsuarioDni($dniUsuario)
     {
@@ -111,7 +184,6 @@ class ReservaControlador
     }
 
 
-    // Guardar reservas en el archivo JSON
     public function guardarEnJSON()
     {
         $reservasArray = [];
@@ -121,7 +193,7 @@ class ReservaControlador
                 'id' => $reserva->getId(),
                 'fechaInicio' => $reserva->getFechaInicio(),
                 'fechaFin' => $reserva->getFechaFin(),
-                'habitacion' => $reserva->getHabitacion()->getNumero(), // guardamos solo el número de la habitación
+                'habitacion' => $reserva->getHabitacion()->getNumero(),
                 'costo' => $reserva->getCosto(),
                 'usuarioDni' => $reserva->getUsuarioDni(),
                 "notificaciones" => $reserva->getNotificaciones()
@@ -131,30 +203,36 @@ class ReservaControlador
         $datosNuevos = ['reservas' => $reservasArray]; //creo arreglo asociativo para guardar las reservas
         file_put_contents($this->reservaJson, json_encode($datosNuevos, JSON_PRETTY_PRINT)); //lo convierto a json y guardo
 
+        $datosNuevos = ['reservas' => $reservasArray];
+        file_put_contents($this->reservaJson, json_encode($datosNuevos, JSON_PRETTY_PRINT));
     }
 
     public function cargarDesdeJSON()
     {
         if (file_exists($this->reservaJson)) {
-            $json = file_get_contents($this->reservaJson); // Lee contenido del archivo
-            $data = json_decode($json, true); // Convierte el JSON en un array
+
+            $json = file_get_contents($this->reservaJson);
+            $data = json_decode($json, true);
+
 
             if (isset($data['reservas'])) {
                 $reservasArray = $data['reservas'];
             } else {
-                $reservasArray = []; // Inicializa como un array vacío si no existe
+                $reservasArray = [];
             }
 
             foreach ($reservasArray as $reservaData) {
-                $usuarioDni = isset($reservaData['usuarioDni']) ? $reservaData['usuarioDni'] : null; // Asigna usuarioDni si existe, de lo contrario null
+                $usuarioDni = isset($reservaData['usuarioDni']) ? $reservaData['usuarioDni'] : null;
                 $habitacion = $this->habitacionesGestor->buscarHabitacionPorNumero($reservaData['habitacion']);
 
                 if (null === $habitacion) {
                     echo "Advertencia: La habitación número {$reservaData['habitacion']} no fue encontrada. Se omitirá esta reserva.\n";
-                    continue; // Omite la reserva que no tiene habitación y continúa con la siguiente
+                    continue;
                 }
 
-                $notificaciones = isset($reservaData['notificaciones']) ? $reservaData['notificaciones'] : []; // Inicializa notificaciones si no existen
+
+                $notificaciones = isset($reservaData['notificaciones']) ? $reservaData['notificaciones'] : [];
+
 
                 $reserva = new Reserva(
                     $reservaData['id'],
@@ -165,18 +243,24 @@ class ReservaControlador
                     $usuarioDni
                 );
 
-                // Agregar notificaciones a la reserva
+
                 foreach ($notificaciones as $notificacion) {
-                    $reserva->setNotificacion($notificacion); // Asumiendo que existe un método agregarNotificacion
+                    $reserva->setNotificacion($notificacion);
                 }
 
                 $this->reservas[] = $reserva;
 
+
                 // Asegurar que el ID esté actualizado
+
                 if ($this->id < $reserva->getId() + 1) {
                     $this->id = $reserva->getId() + 1;
                 }
             }
         }
     }
+
 }
+
+
+
