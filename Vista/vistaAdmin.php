@@ -34,9 +34,12 @@ function menuAdmin()
 
 function menuAdminUsuarios()
 {
-    $usuariosGestor = new UsuarioControlador;
+    $usuariosGestor = new UsuarioControlador();
+    $habitacionesGestor = new HabitacionControlador(); // Instanciar HabitacionControlador si es requerido
+    $reservasGestor = new ReservaControlador($habitacionesGestor); // Pasar el argumento requerido
+
     while (true) {
-        echo "=== Menú Administrar Usuarios ===\n";
+        echo "\n=== Menú Administrar Usuarios ===\n";
         echo "1. Mostrar Usuarios\n";
         echo "2. Modificar Usuario\n";
         echo "3. Eliminar Usuario\n";
@@ -51,12 +54,12 @@ function menuAdminUsuarios()
                 break;
             case 2:
                 modificarUsuario($usuariosGestor, true);
-                return;
+                break; // Regresa al menú principal tras modificar.
             case 3:
-                eliminaUsuario($usuariosGestor);
+                eliminaUsuario($usuariosGestor, $reservasGestor);
                 break;
             case 4:
-                return;
+                return; // Salida del menú actual.
             default:
                 echo "Opción no válida. Inténtelo de nuevo.\n";
                 break;
@@ -126,7 +129,8 @@ function menuAdminReservas()
                     echo $reserva . "\n";
                 }
                 break;
-            case 2: modificarReserva($reservasGestor, $habitacionesGestor, true);
+            case 2:
+                modificarReserva($reservasGestor, $habitacionesGestor, true);
                 break;
             case 3:
                 eliminarReserva($reservasGestor, $habitacionesGestor, true);

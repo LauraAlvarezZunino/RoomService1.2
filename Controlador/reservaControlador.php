@@ -35,6 +35,7 @@ class ReservaControlador
         }
 
         foreach ($this->reservas as $existeReserva) {
+
             if ($existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
                 !($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
                   $reserva->getFechaInicio() > $existeReserva->getFechaFin())) {
@@ -60,6 +61,15 @@ class ReservaControlador
                 }
 
                 return false; // No se creó la reserva
+
+            if (
+                $existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+                ! ($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
+                    $reserva->getFechaInicio() > $existeReserva->getFechaFin())
+            ) {
+                echo "La habitación ya está reservada en las fechas solicitadas.\n";
+
+                return;
             }
         }
 
@@ -75,6 +85,21 @@ class ReservaControlador
 
         foreach ($this->habitacionesGestor->buscarPorTipo($tipo) as $habitacion) {
             $disponible = true;
+          
+    public function modificarReserva($id, $nuevaFechaInicio, $nuevaFechaFin, $nuevaHabitacion, $nuevoCosto)
+    {
+        $reserva = $this->buscarReservaPorId($id);
+        if ($reserva) {
+            $reserva->setFechaInicio($nuevaFechaInicio);
+            $reserva->setFechaFin($nuevaFechaFin);
+            $reserva->setHabitacion($nuevaHabitacion);
+            $reserva->setCosto($nuevoCosto);
+            $this->guardarEnJSON();
+        } else {
+            echo "Reserva no encontrada.\n";
+        }
+    }
+          
 
             foreach ($this->reservas as $reserva) {
                 if ($reserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
@@ -140,6 +165,24 @@ class ReservaControlador
     {
         return $this->reservas;
     }
+    public function limpiarNotificacionesPorUsuarioDni($dniUsuario)
+    {
+        $notificacionesEliminadas = 0;
+
+        foreach ($this->reservas as $reserva) {
+            if ($reserva->getUsuarioDni() === $dniUsuario) {
+                $cantidadNotificaciones = count($reserva->getNotificaciones());
+                if ($cantidadNotificaciones > 0) {
+                    $reserva->limpiarNotificaciones();
+                    $notificacionesEliminadas += $cantidadNotificaciones;
+                }
+            }
+        }
+
+        $this->guardarEnJSON();
+        echo "Se han eliminado {$notificacionesEliminadas} notificaciones.\n";
+    }
+
 
     public function guardarEnJSON()
     {
@@ -153,9 +196,12 @@ class ReservaControlador
                 'habitacion' => $reserva->getHabitacion()->getNumero(),
                 'costo' => $reserva->getCosto(),
                 'usuarioDni' => $reserva->getUsuarioDni(),
-                'notificaciones' => $reserva->getNotificaciones()
+                "notificaciones" => $reserva->getNotificaciones()
             ];
         }
+
+        $datosNuevos = ['reservas' => $reservasArray]; //creo arreglo asociativo para guardar las reservas
+        file_put_contents($this->reservaJson, json_encode($datosNuevos, JSON_PRETTY_PRINT)); //lo convierto a json y guardo
 
         $datosNuevos = ['reservas' => $reservasArray];
         file_put_contents($this->reservaJson, json_encode($datosNuevos, JSON_PRETTY_PRINT));
@@ -164,8 +210,10 @@ class ReservaControlador
     public function cargarDesdeJSON()
     {
         if (file_exists($this->reservaJson)) {
+
             $json = file_get_contents($this->reservaJson);
             $data = json_decode($json, true);
+
 
             if (isset($data['reservas'])) {
                 $reservasArray = $data['reservas'];
@@ -182,7 +230,9 @@ class ReservaControlador
                     continue;
                 }
 
+
                 $notificaciones = isset($reservaData['notificaciones']) ? $reservaData['notificaciones'] : [];
+
 
                 $reserva = new Reserva(
                     $reservaData['id'],
@@ -193,11 +243,15 @@ class ReservaControlador
                     $usuarioDni
                 );
 
+
                 foreach ($notificaciones as $notificacion) {
                     $reserva->setNotificacion($notificacion);
                 }
 
                 $this->reservas[] = $reserva;
+
+
+                // Asegurar que el ID esté actualizado
 
                 if ($this->id < $reserva->getId() + 1) {
                     $this->id = $reserva->getId() + 1;
@@ -205,4 +259,8 @@ class ReservaControlador
             }
         }
     }
+
 }
+
+
+

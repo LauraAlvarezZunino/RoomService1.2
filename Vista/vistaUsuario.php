@@ -16,7 +16,7 @@ function menuUsuario()
     echo "2. Soy Usuario\n";
     echo 'Seleccione una opción: ';
 
-    
+
     $opcion = trim(fgets(STDIN));
 
     switch ($opcion) {
@@ -27,13 +27,13 @@ function menuUsuario()
         case 2:
             echo 'Ingrese su DNI para continuar: ';
             $dni = trim(fgets(STDIN));
-            $dniGuardado= $dni;
+            $dniGuardado = $dni;
             echo 'Ingrese su clave para continuar: ';
             $clave = trim(fgets(STDIN));
-            
+
             // Busca al usuario por DNI y valida que coincida la clave
             $usuario = $usuariosGestor->obtenerUsuarioPorDni($dni);
-            
+
             if ($usuario && $usuario->getClave() === $clave) {
                 // Si se encuentra un usuario y la clave coincide, accede al menú
                 menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor);
@@ -42,7 +42,7 @@ function menuUsuario()
                 echo "DNI o clave incorrectos. Inténtelo de nuevo.\n";
                 menuUsuario(); // Redirige al menú principal
             }
-            
+
 
         default:
             echo "Opción no válida. Inténtelo de nuevo.\n";
@@ -53,6 +53,7 @@ function menuUsuario()
 }
 function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor)
 {
+    global $dniGuardado;
     while (true) {
         echo "\n=== Menú Usuario Registrado ===\n";
         echo "1. Ver Habitaciones\n";
@@ -62,7 +63,8 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
         echo "5. Eliminar Reserva\n";
         echo "6. Ver mis datos\n";
         echo "7. Modificar mis datos\n";
-        echo "8. Salir\n";
+        echo "8. Marcar notificaciones como leidas\n";
+        echo "9. Salir\n";
         echo 'Seleccione una opción: ';
 
         $opcion = trim(fgets(STDIN));
@@ -90,6 +92,9 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
                 modificarUsuario($usuario);
                 break;
             case 8:
+                $reservasGestor->limpiarNotificacionesPorUsuarioDni($dniGuardado);
+                break;
+            case 9:
                 echo "Saliendo del sistema...\n";
                 return;
             default:
@@ -98,4 +103,3 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
         }
     }
 }
-
