@@ -90,7 +90,24 @@ class ReservaControlador
 
         return null;
     }
-  
+    public function limpiarNotificacionesPorUsuarioDni($dniUsuario)
+{
+    $notificacionesEliminadas = 0;
+
+    foreach ($this->reservas as $reserva) {
+        if ($reserva->getUsuarioDni() === $dniUsuario) {
+            $cantidadNotificaciones = count($reserva->getNotificaciones());
+            if ($cantidadNotificaciones > 0) {
+                $reserva->limpiarNotificaciones();
+                $notificacionesEliminadas += $cantidadNotificaciones;
+            }
+        }
+    }
+
+    $this->guardarEnJSON();
+    echo "Se han eliminado {$notificacionesEliminadas} notificaciones.\n";
+}
+
     
     // Guardar reservas en el archivo JSON
     public function guardarEnJSON()

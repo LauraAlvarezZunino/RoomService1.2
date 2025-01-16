@@ -34,9 +34,7 @@
             "habitacion": "10",
             "costo": 272000,
             "usuarioDni": "36608470",
-            "notificaciones": [
-                "Tu reserva (ID: 15) fue modificada por un administrador."
-            ]
+            "notificaciones": []
         }
     ]
 }

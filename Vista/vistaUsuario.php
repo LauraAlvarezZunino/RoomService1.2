@@ -53,6 +53,7 @@ function menuUsuario()
 }
 function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor)
 {
+    global $dniGuardado;
     while (true) {
         echo "\n=== Menú Usuario Registrado ===\n";
         echo "1. Ver Habitaciones\n";
@@ -62,7 +63,8 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
         echo "5. Eliminar Reserva\n";
         echo "6. Ver mis datos\n";
         echo "7. Modificar mis datos\n";
-        echo "8. Salir\n";
+        echo "8. Marcar notificaciones como leidas\n";
+        echo "9. Salir\n";
         echo 'Seleccione una opción: ';
 
         $opcion = trim(fgets(STDIN));
@@ -90,6 +92,9 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
                 modificarUsuario($usuario);
                 break;
             case 8:
+                $reservasGestor->limpiarNotificacionesPorUsuarioDni($dniGuardado);
+                break;
+            case 9:
                 echo "Saliendo del sistema...\n";
                 return;
             default:
