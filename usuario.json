@@ -55,14 +55,6 @@
             "email": "maria.garcia@example.com",
             "telefono": "2494671234",
             "clave": "marita"
-        },
-        {
-            "id": 8,
-            "nombre": "lau alvarez",
-            "dni": "36608470",
-            "email": "lauu.25@live.com.ar",
-            "telefono": "2494213912",
-            "clave": "2025"
         }
     ]
 }

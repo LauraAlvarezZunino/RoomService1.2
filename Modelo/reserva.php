@@ -105,7 +105,7 @@ class Reserva
     {
         return $this->usuarioDni;
     }
-
+    
     public function reservaToArray($reserva)
     {
         return [
