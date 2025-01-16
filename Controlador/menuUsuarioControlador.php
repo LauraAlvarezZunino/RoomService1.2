@@ -40,7 +40,6 @@ function crearReserva($dniGuardado, $habitacionesGestor, $reservasGestor)
             echo "Reserva realizada con éxito.\n";
             return; // Salir tras el éxito
         } else {
-            echo "La habitación seleccionada no está disponible en las fechas indicadas.\n";
             $habitacionSeleccionada = null; // Reiniciar la selección de habitación
 
             // Permitir al usuario seleccionar otra habitación
