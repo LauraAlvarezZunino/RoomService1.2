@@ -7,11 +7,8 @@ include_once 'habitacionControlador.php';
 class ReservaControlador
 {
     private $reservas = [];
-
     private $reservaJson = 'reservas.json';
-
     private $id = 1;
-
     private $habitacionesGestor;
 
     public function __construct($habitacionesGestor)
@@ -59,11 +56,10 @@ class ReservaControlador
                     }
                 }
 
-                return false; // No se creó la reserva
+                return false;
             }
         }
 
-        // Crear la reserva si no hay conflictos
         $this->reservas[] = $reserva;
         $this->guardarEnJSON();
         return true;
