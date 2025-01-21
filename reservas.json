@@ -71,6 +71,15 @@
             "costo": 238000,
             "usuarioDni": "36608470",
             "notificaciones": []
+        },
+        {
+            "id": 23,
+            "fechaInicio": "2025-02-20",
+            "fechaFin": "2025-02-24",
+            "habitacion": "12",
+            "costo": 164000,
+            "usuarioDni": "36608470",
+            "notificaciones": []
         }
     ]
 }
