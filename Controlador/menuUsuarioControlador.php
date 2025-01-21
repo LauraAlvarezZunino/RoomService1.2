@@ -1,5 +1,7 @@
 <?php
 
+// ==================== Gestión de Reservas ====================
+
 function crearReserva($dniGuardado, $habitacionesGestor, $reservasGestor)
 {
     global $dniGuardado; // Declarar la variable global
@@ -71,12 +73,13 @@ function crearReserva($dniGuardado, $habitacionesGestor, $reservasGestor)
 
 function calcularCostoReserva($fechaInicio, $fechaFin, $precioPorNoche)
 {
-    $fechaInicio = new DateTime($fechaInicio);// datetime clase de php 
+    $fechaInicio = new DateTime($fechaInicio); // datetime clase de php 
     $fechaFin = new DateTime($fechaFin);
     $diferencia = $fechaInicio->diff($fechaFin);
 
     return $diferencia->days * $precioPorNoche; 
 }
+
 function solicitarTipoHabitacion()
 {
     echo 'Ingrese el tipo de habitación para la reserva (simple - doble - familiar): ';
@@ -84,33 +87,16 @@ function solicitarTipoHabitacion()
     return trim(fgets(STDIN));
 }
 
-function seleccionarHabitacion($habitaciones)
-{
-    echo 'Seleccione una habitación (número): ';
-    $eleccionHabitacion = trim(fgets(STDIN));
-
-    foreach ($habitaciones as $habitacion) {
-        if ($habitacion->getNumero() == $eleccionHabitacion) {
-            return $habitacion;
-        }
-    }
-    echo "No se encontró una habitación con ese número.\n";
-
-    return null;
-}
-
 function solicitarFechasReserva()
 {
     $fechaInicio = '';
     $fechaFin = '';
-
 
     while (true) {
         echo 'Ingrese la fecha de inicio (YYYY-MM-DD): ';
         $fechaInicio = trim(fgets(STDIN));
         $fechaActual = date('Y-m-d');
 
-    
         if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $fechaInicio) && strtotime($fechaInicio) > strtotime($fechaActual)) {
             break;
         } else {
@@ -132,7 +118,8 @@ function solicitarFechasReserva()
     return [$fechaInicio, $fechaFin];
 }
 
-//usuario
+// ==================== Gestión de Usuarios ====================
+
 function mostrarDatosUsuario()
 {
     global $dniGuardado;
@@ -216,4 +203,3 @@ function registrarse($usuariosGestor)
 
     menuUsuario(); // vuelve al menú principal
 }
-

@@ -31,12 +31,10 @@
             "id": 15,
             "fechaInicio": "2025-01-20",
             "fechaFin": "2025-01-28",
-            "habitacion": "10",
-            "costo": 272000,
+            "habitacion": "1",
+            "costo": 4800000,
             "usuarioDni": "36608470",
-            "notificaciones": [
-                "Tu reserva (ID: 15) fue modificada por un administrador."
-            ]
+            "notificaciones": []
         },
         {
             "id": 16,
@@ -63,6 +61,15 @@
             "habitacion": "9",
             "costo": 170000,
             "usuarioDni": "111111",
+            "notificaciones": []
+        },
+        {
+            "id": 22,
+            "fechaInicio": "2025-02-21",
+            "fechaFin": "2025-02-28",
+            "habitacion": "9",
+            "costo": 238000,
+            "usuarioDni": "36608470",
             "notificaciones": []
         }
     ]

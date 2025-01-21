@@ -137,10 +137,72 @@ class ReservaControlador
         return $this->reservas;
     }
 
+    public function modificarReserva($id, $nuevaFechaInicio, $nuevaFechaFin, $nuevaHabitacion, $nuevoCosto)
+    {
+        $reserva = $this->buscarReservaPorId($id);
+        if ($reserva) {
+            $reserva->setFechaInicio($nuevaFechaInicio);
+            $reserva->setFechaFin($nuevaFechaFin);
+            $reserva->setHabitacion($nuevaHabitacion);
+            $reserva->setCosto($nuevoCosto);
+            $this->guardarEnJSON();
+        } else {
+            echo "Reserva no encontrada.\n";
+        }
+    }
+
+    public function eliminarReserva($id)
+    {
+        foreach ($this->reservas as $indice => $reserva) {
+            if ($reserva->getId() == $id) {
+                unset($this->reservas[$indice]);
+                $this->reservas = array_values($this->reservas); // reposicionamos el array para que no quede un lugar vacio
+                $this->guardarEnJSON();
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function buscarReservaPorId($id)
+    {
+        foreach ($this->reservas as $reserva) {
+            if ($reserva->getId() == $id) {
+                return $reserva;
+            }
+        }
+
+        return null;
+    }
+
+
+    public function limpiarNotificacionesPorUsuarioDni($dniUsuario)
+{
+
+    foreach ($this->reservas as $reserva) {
+        if ($reserva->getUsuarioDni() === $dniUsuario) {
+            $cantidadNotificaciones = count($reserva->getNotificaciones());
+            if ($cantidadNotificaciones > 0) {
+           
+                $reserva->limpiarNotificaciones(); 
+            }
+        }    
+    } echo "Se han eliminado las notificaciones.\n"; 
+   
+    $this->guardarEnJSON(); 
+
+}
+
+ 
+
+    
+    
     public function guardarEnJSON()
     {
         $reservasArray = [];
-
+    
         foreach ($this->reservas as $reserva) {
             $reservasArray[] = [
                 'id' => $reserva->getId(),
@@ -149,14 +211,14 @@ class ReservaControlador
                 'habitacion' => $reserva->getHabitacion()->getNumero(),
                 'costo' => $reserva->getCosto(),
                 'usuarioDni' => $reserva->getUsuarioDni(),
-                'notificaciones' => $reserva->getNotificaciones()
+                'notificaciones' => $reserva->getNotificaciones() 
             ];
         }
-
+    
         $datosNuevos = ['reservas' => $reservasArray];
         file_put_contents($this->reservaJson, json_encode($datosNuevos, JSON_PRETTY_PRINT));
     }
-
+    
     public function cargarDesdeJSON()
     {
         if (file_exists($this->reservaJson)) {
