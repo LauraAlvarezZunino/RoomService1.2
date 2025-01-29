@@ -80,6 +80,12 @@ class UsuarioControlador
                 } else {
                     $usuario->setTelefono($usuario->getTelefono());
                 }
+                if (isset($nuevosDatos['clave'])) {
+                    $usuario->setClave($nuevosDatos['clave']);
+                } else {
+                    $usuario->setClave($usuario->getClave());
+                }
+
 
                 $this->guardarEnJSON();
 

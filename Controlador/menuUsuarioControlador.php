@@ -181,7 +181,7 @@ function registrarse($usuariosGestor)
     while (true) {
         echo 'Ingrese el teléfono del usuario: ';
         $telefono = trim(fgets(STDIN));
-        if (preg_match("/^\d+$/", $telefono)) {
+        if (preg_match("/^\d{10,11}$/", $telefono)) {
             break; 
         } else {
             echo "El teléfono debe contener solo números. Por favor, intente nuevamente.\n";
@@ -190,15 +190,15 @@ function registrarse($usuariosGestor)
 
     while (true) {
         echo 'Ingrese la clave del usuario: ';
-        $direccion = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z0-9]+$/", $direccion)) { 
+        $clave = trim(fgets(STDIN));
+        if (preg_match("/^[a-zA-Z0-9]+$/", $clave)) { 
             break; 
         } else {
-            echo "La clave debe contener solo letras, números. Por favor, intente nuevamente.\n";
+            echo "La clave debe contener solo letras y/o números. Por favor, intente nuevamente.\n";
         }
     }
 
-    $usuariosGestor->crearUsuario($nombreApellido, $dni, $email, $telefono, $direccion);
+    $usuariosGestor->crearUsuario($nombreApellido, $dni, $email, $telefono, $clave);
     echo "Usuario agregado exitosamente.\n";
 
     menuUsuario(); // vuelve al menú principal

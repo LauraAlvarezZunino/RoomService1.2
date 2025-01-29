@@ -140,55 +140,90 @@ function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
 }
 
 //USUARIOS
-
 function modificarUsuario($usuario, $esAdministrador = false)
 {
     global $dniGuardado;
     $usuariosGestor = new UsuarioControlador;
-    $usuario = $usuariosGestor->obtenerUsuarioPorDni($dniGuardado);
-
-    if ($esAdministrador) {
-        echo 'Ingrese el ID del usuario que quiere modificar: ';
-        $id = trim(fgets(STDIN));
-    } else {
-        if (! $usuario) {
+    
+    // Si no es administrador, obtener usuario por su propio DNI
+    if (!$esAdministrador) {
+        $usuario = $usuariosGestor->obtenerUsuarioPorDni($dniGuardado);
+        if (!$usuario) {
             echo "Usuario no encontrado o no autorizado.\n";
-
             return false;
         }
         $id = $usuario->getId();
+    } else {
+        echo 'Ingrese el ID del usuario que quiere modificar: ';
+        $id = trim(fgets(STDIN));
     }
 
     $usuario = $usuariosGestor->obtenerUsuarioPorId($id);
 
-    if (! $usuario) {
+    if (!$usuario) {
         echo "Usuario no encontrado.\n";
-
         return false;
     }
 
     echo "Modificando al usuario con ID: {$usuario->getId()}\n";
-    echo 'Nombre actual: ' . $usuario->getNombreApellido() . "\n";
-    echo 'DNI actual: ' . $usuario->getDni() . "\n";
-    echo 'Email actual: ' . $usuario->getEmail() . "\n";
-    echo 'Teléfono actual: ' . $usuario->getTelefono() . "\n";
+    echo "Nombre actual: {$usuario->getNombreApellido()}\n";
+    echo "DNI actual: {$usuario->getDni()}\n";
+    echo "Email actual: {$usuario->getEmail()}\n";
+    echo "Teléfono actual: {$usuario->getTelefono()}\n";
 
-    echo 'Introduce el nuevo nombre (deja vacío para mantener el actual): ';
-    $nombreApellido = trim(fgets(STDIN));
+    // Pedir nuevo nombre
+    while (true) {
+        echo 'Introduce el nuevo nombre (deja vacío para mantener el actual): ';
+        $nombreApellido = trim(fgets(STDIN));
 
-    echo 'Introduce el nuevo email (deja vacío para mantener el actual): ';
-    $email = trim(fgets(STDIN));
+        if ($nombreApellido === "" || preg_match("/^[a-zA-Z\s]+$/", $nombreApellido)) {
+            break;
+        } else {
+            echo "Por favor, ingrese solo letras y espacios para el nombre y apellido.\n";
+        }
+    }
 
-    echo 'Introduce el nuevo teléfono (deja vacío para mantener el actual): ';
-    $telefono = trim(fgets(STDIN));
+    // Pedir nuevo email
+    while (true) {
+        echo 'Introduce el nuevo email (deja vacío para mantener el actual): ';
+        $email = trim(fgets(STDIN));
 
-    echo 'Introduce la nueva clave (deja vacío para mantener actual): ';
-    $clave = trim(fgets(STDIN));
+        if ($email === "" || filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            break;
+        } else {
+            echo "Por favor, ingrese un email válido.\n";
+        }
+    }
 
+    // Pedir nuevo teléfono
+    while (true) {
+        echo 'Introduce el nuevo teléfono (deja vacío para mantener el actual): ';
+        $telefono = trim(fgets(STDIN));
+
+        if ($telefono === "" || preg_match("/^\d{10,11}$/", $telefono)) {
+            break;
+        } else {
+            echo "El teléfono debe contener solo números (10-11 dígitos).\n";
+        }
+    }
+
+    // Pedir nueva clave
+    while (true) {
+        echo 'Introduce la nueva clave (deja vacío para mantener la actual): ';
+        $clave = trim(fgets(STDIN));
+
+        if ($clave === "" || preg_match("/^[a-zA-Z0-9]+$/", $clave)) {
+            break;
+        } else {
+            echo "La clave debe contener solo letras y/o números. Por favor, intente nuevamente.\n";
+        }
+    }
+
+    // Actualizar datos, solo si fueron modificados
     $nuevosDatos = [
-        'nombre' => $nombreApellido ?: null,
-        'email' => $email ?: null,
-        'telefono' => $telefono ?: null,
+        'nombre' => $nombreApellido ?: $usuario->getNombreApellido(),
+        'email' => $email ?: $usuario->getEmail(),
+        'telefono' => $telefono ?: $usuario->getTelefono(),
         'clave' => $clave ?: null,
     ];
 
@@ -198,6 +233,7 @@ function modificarUsuario($usuario, $esAdministrador = false)
         echo "No se pudo actualizar el usuario.\n";
     }
 }
+
 
 //HABITACIONES
 
