@@ -92,7 +92,9 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
                 modificarUsuario($usuario);
                 break;
             case 8:
-                $reservasGestor->limpiarNotificacionesPorUsuarioDni($dniGuardado);
+                $notificacionControlador = new NotificacionControlador(); // Asegúrate de que esta clase esté incluida y cargada
+                $notificacionControlador->eliminarNotificacionesPorDni($dniGuardado);
+                echo "Notificaciones marcadas como leídas y eliminadas.\n";
                 break;
             case 9:
                 echo "Saliendo del sistema...\n";

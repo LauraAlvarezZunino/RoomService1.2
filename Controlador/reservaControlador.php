@@ -175,26 +175,9 @@ class ReservaControlador
         }
 
         return null;
-    }
+        }
 
-
-    public function limpiarNotificacionesPorUsuarioDni($dniUsuario)
-{
-
-    foreach ($this->reservas as $reserva) {
-        if ($reserva->getUsuarioDni() === $dniUsuario) {
-            $cantidadNotificaciones = count($reserva->getNotificaciones());
-            if ($cantidadNotificaciones > 0) {
-           
-                $reserva->limpiarNotificaciones(); 
-            }
-        }    
-    } echo "Se han eliminado las notificaciones.\n"; 
-   
-    $this->guardarEnJSON(); 
-
-}
-
+    
  
 
     
@@ -210,8 +193,7 @@ class ReservaControlador
                 'fechaFin' => $reserva->getFechaFin(),
                 'habitacion' => $reserva->getHabitacion()->getNumero(),
                 'costo' => $reserva->getCosto(),
-                'usuarioDni' => $reserva->getUsuarioDni(),
-                'notificaciones' => $reserva->getNotificaciones() 
+                'usuarioDni' => $reserva->getUsuarioDni()
             ];
         }
     
@@ -251,9 +233,7 @@ class ReservaControlador
                     $usuarioDni
                 );
 
-                foreach ($notificaciones as $notificacion) {
-                    $reserva->setNotificacion($notificacion);
-                }
+               
 
                 $this->reservas[] = $reserva;
 

@@ -1,16 +1,17 @@
 <?php
 
 //RESERVAS
-
 function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false, $usuario = null)
 {
     global $dniGuardado;
+    $notificacionControlador = new NotificacionControlador();
+
     echo 'Ingrese el ID de la reserva que desea modificar: ';
     $id = trim(fgets(STDIN));
     $reserva = $reservasGestor->buscarReservaPorId($id);
 
     // Verificar si la reserva existe y si el usuario es el dueño, a menos que sea un administrador
-    if (! $reserva || (! $esAdmin && $reserva->getUsuarioDni() !== $dniGuardado)) {
+    if (!$reserva || (!$esAdmin && $reserva->getUsuarioDni() !== $dniGuardado)) {
         echo "Reserva no encontrada o no tiene permisos para modificar esta reserva.\n";
         return;
     }
@@ -29,41 +30,15 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     $nuevaFechaFin = trim(fgets(STDIN));
     $nuevaFechaFin = $nuevaFechaFin ?: $reserva->getFechaFin();
 
-    $fechaActual = date('Y-m-d');
+    // Aquí agregar las validaciones y cambios de fechas...
 
-    if ($nuevaFechaInicio !== $reserva->getFechaInicio()) {  // Solo validar si se cambió la fecha
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $nuevaFechaInicio)) {
-            echo "Por favor, ingrese una fecha válida.\n";
-            return;
-        }
-    
-        // Comparar con la fecha actual
-        if (strtotime($nuevaFechaInicio) < strtotime($fechaActual)) {
-            echo "Por favor, ingrese una fecha válida.\n";
-            return;
-        }
-    }
-    
-    // Validar formato de fecha de fin y que sea posterior a la fecha de inicio
-    if ($nuevaFechaFin !== $reserva->getFechaFin()) {  // Solo validar si se cambió la fecha
-        if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $nuevaFechaFin)) {
-            echo "Por favor, ingrese una fecha válida.\n";
-            return;
-        }
-    
-        // Comparar que la fecha de fin sea posterior a la de inicio
-        if (strtotime($nuevaFechaFin) < strtotime($nuevaFechaInicio)) {
-            echo "Por favor, ingrese una fecha válida.\n";
-            return;
-        }
-    }
     echo 'Ingrese el nuevo número de habitación o deje vacío para mantener la actual: ';
     $nuevoNumeroHabitacion = trim(fgets(STDIN));
     $nuevaHabitacion = $nuevoNumeroHabitacion
         ? $habitacionesGestor->buscarHabitacionPorNumero($nuevoNumeroHabitacion)
         : $reserva->getHabitacion();
 
-    if (! $nuevaHabitacion) {
+    if (!$nuevaHabitacion) {
         echo "Habitación no encontrada.\n";
         return;
     }
@@ -76,68 +51,89 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     $reserva->setHabitacion($nuevaHabitacion);
     $reserva->setCosto($nuevoCosto);
 
-    // Agregar notificación para el usuario
+    // Agregar notificación si es un administrador
     if ($esAdmin) {
-        $notificacion = "Tu reserva (ID: {$reserva->getId()}) fue modificada por un administrador.";
-        $reserva->setNotificacion($notificacion);
+        $mensaje = "Tu reserva (ID: {$reserva->getId()}) fue modificada por un administrador.";
+        $usuarioDni = $usuario ? $usuario->getDni() : $reserva->getUsuarioDni(); // Si no hay usuario, usa el DNI del dueño original
+        $notificacion = new Notificacion($reserva->getId(), $mensaje, $usuarioDni);
+        $notificacionControlador->guardarNotificacion($notificacion);
     }
 
     $reservasGestor->guardarEnJSON();
     echo 'Reserva actualizada correctamente. Nuevo costo: $' . $nuevoCosto . "\n";
 }
 
-    function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
-    {
-        global $dniGuardado;
-        $reservas = $reservasGestor->obtenerReservas();
-        $tieneReservas = false;
-    
-        foreach ($reservas as $reserva) {
-            if ($esAdmin || ($usuario && $reserva->getUsuarioDni() === $dniGuardado)) {
-                echo "-------------------------\n";
-                echo 'ID: ' . $reserva->getId() . "\n";
-                echo 'Fecha Inicio: ' . $reserva->getFechaInicio() . "\n";
-                echo 'Fecha Fin: ' . $reserva->getFechaFin() . "\n";
-                echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
-                echo 'Costo Total: $' . $reserva->getCosto() . "\n";
-    
-                // Mostrar notificaciones
-                $notificaciones = $reserva->getNotificaciones();
-                if (!empty($notificaciones)) {
-                    echo "Notificaciones:\n";
-                    foreach ($notificaciones as $notificacion) {
-                        echo "- " . $notificacion . "\n";
-                    }
-                    $reserva->limpiarNotificaciones(); // Limpiar después de mostrarlas
+function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
+{
+    global $dniGuardado;
+    $reservas = $reservasGestor->obtenerReservas();
+    $tieneReservas = false;
+
+    $notificacionControlador = new NotificacionControlador();
+
+    foreach ($reservas as $reserva) {
+        if ($esAdmin || ($usuario && $reserva->getUsuarioDni() === $dniGuardado)) {
+            echo "-------------------------\n";
+            echo 'ID: ' . $reserva->getId() . "\n";
+            echo 'Fecha Inicio: ' . $reserva->getFechaInicio() . "\n";
+            echo 'Fecha Fin: ' . $reserva->getFechaFin() . "\n";
+            echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
+            echo 'Costo Total: $' . $reserva->getCosto() . "\n";
+
+            // Mostrar notificaciones correctamente
+            $notificacionesReserva = $notificacionControlador->mostrarNotificaciones($reserva->getId());
+
+            // Filtrar y eliminar duplicados de notificaciones
+            $notificacionesReserva = array_unique(array_column($notificacionesReserva, 'notificacion'));
+
+            if (!empty($notificacionesReserva)) {
+                echo "Notificaciones:\n";
+                foreach ($notificacionesReserva as $notificacion) {
+                    echo "- " . trim($notificacion) . "\n";
                 }
-                echo "-------------------------\n";
-                $tieneReservas = true;
             }
-        }
-    
-        if (! $tieneReservas) {
-            echo $esAdmin ? "No hay reservas registradas.\n" : "No tienes reservas registradas.\n";
+
+            echo "-------------------------\n";
+            $tieneReservas = true;
         }
     }
-    
 
+    if (!$tieneReservas) {
+        echo $esAdmin ? "No hay reservas registradas.\n" : "No tienes reservas registradas.\n";
+    }
+}
 
+// Función eliminarReserva
 function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
 {
     echo 'Ingrese el ID de la reserva que desea eliminar: ';
     $idEliminar = trim(fgets(STDIN));
     $reserva = $reservasGestor->buscarReservaPorId($idEliminar);
 
-    // Si no es administrador, verificamos que la reserva pertenezca al usuario
-    if (! $reserva || (! $esAdmin && $reserva->getUsuarioDni() !== $usuario->getDni())) {
+    // Si no se encuentra la reserva o el usuario no tiene permisos para eliminarla
+    if (!$reserva || (!$esAdmin && (!$usuario || $reserva->getUsuarioDni() !== $usuario->getDni()))) {
         echo "Reserva no encontrada o no pertenece a este usuario.\n";
-
         return;
     }
 
+    // Crear y guardar notificación si es un administrador
+    if ($esAdmin) {
+        $notificacionControlador = new NotificacionControlador();
+        $mensaje = "Tu reserva (ID: {$reserva->getId()}) fue eliminada por un administrador.";
+        
+        // Si $usuario es null, usa el DNI del dueño de la reserva
+        $usuarioDni = $usuario ? $usuario->getDni() : $reserva->getUsuarioDni();
+
+        $notificacion = new Notificacion($reserva->getId(), $mensaje, $usuarioDni);
+        $notificacionControlador->guardarNotificacion($notificacion);
+    }
+
+    // Eliminar la reserva
     $reservasGestor->eliminarReserva($idEliminar);
     echo "Reserva eliminada con éxito.\n";
 }
+
+
 
 //USUARIOS
 function modificarUsuario($usuario, $esAdministrador = false)

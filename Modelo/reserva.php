@@ -1,24 +1,15 @@
 <?php
 
 include_once 'Controlador/habitacionControlador.php';
+
 class Reserva
 {
     private $id;
-
     private $fechaInicio;
-
     private $fechaFin;
-
     private Habitacion $habitacion; 
-
     private $costo;
-
     private $usuarioDni;
-   
-    private $notificaciones = [];
-
-    
-
 
     public function __construct($id, $fechaInicio, $fechaFin, Habitacion $habitacion, $costo, $usuarioDni)
     {
@@ -29,21 +20,6 @@ class Reserva
         $this->costo = $costo;
         $this->usuarioDni = $usuarioDni;
     }
-    public function setNotificacion($mensaje)
-    {
-        $this->notificaciones[] = $mensaje;
-    }
-
-    public function getNotificaciones()
-    {
-        return $this->notificaciones;
-    }
-
-    public function limpiarNotificaciones()
-    {
-        $this->notificaciones = [];
-    }
-
 
     // Getters y Setters
     public function getId()
@@ -112,8 +88,7 @@ class Reserva
             'id' => $reserva->getId(),
             'Fecha inicio' => $reserva->getFechaInicio(),
             'Fecha fin' => $reserva->getFechaFin(),
-            'Estado' => $reserva->getEstado(),
-            'Habitacion' => $reserva->getHabitacion(),
+            'Habitacion' => $reserva->getHabitacion()->getNumero(), // Asegúrate de que devuelva el número
             'Costo' => $reserva->getCosto(),
             'Reservado por DNI' => $reserva->getUsuarioDni(),
         ];
@@ -122,6 +97,6 @@ class Reserva
     //Habitación: {$this->habitacion->getNumero()} se agrega para mostrar hab en vez de objeto 
     public function __toString()
     {
-        return "ID: {$this->id}, Fecha Inicio: {$this->fechaInicio}, Fecha Fin: {$this->fechaFin}, Habitación: {$this->habitacion->getNumero()}, Costo: $ $this->costo, Reservado por dni:{$this->usuarioDni}";
+        return "ID: {$this->id}, Fecha Inicio: {$this->fechaInicio}, Fecha Fin: {$this->fechaFin}, Habitacion: {$this->habitacion->getNumero()}, Costo: $ {$this->costo}, Reservado por dni:{$this->usuarioDni}";
     }
 }

@@ -1,0 +1,17 @@
+[
+    {
+        "reserva_id": 21,
+        "notificacion": "Tu reserva (ID: 21) fue modificada por un administrador.",
+        "usuario_dni": "111111"
+    },
+    {
+        "reserva_id": 12,
+        "notificacion": "Tu reserva (ID: 12) fue eliminada por un administrador.",
+        "usuario_dni": "111111"
+    },
+    {
+        "reserva_id": 14,
+        "notificacion": "Tu reserva (ID: 14) fue modificada por un administrador.",
+        "usuario_dni": "111111"
+    }
+]

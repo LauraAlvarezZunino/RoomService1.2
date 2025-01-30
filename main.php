@@ -2,13 +2,15 @@
 
 include_once 'Controlador/usuarioControlador.php';
 include_once 'Controlador/habitacionControlador.php';
-include_once 'Modelo/reserva.php';
+//include_once 'Modelo/reserva.php';
 include_once 'Controlador/reservaControlador.php';
 include_once 'Vista/vistaUsuario.php';
 include_once 'Vista/vistaAdmin.php';
 include_once 'Controlador/menuControlador.php';
 include_once 'Controlador/menuUsuarioControlador.php';
 include_once 'Controlador/menuAdminControlador.php';
+require_once 'Controlador/NotificacionControlador.php';
+
 
 while (true) {
     $clave = 111;
