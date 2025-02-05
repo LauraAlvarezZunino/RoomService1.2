@@ -68,7 +68,6 @@ function menuAdminUsuarios()
 
 
 
-
 function menuAdminHabitaciones()
 {
     $habitacionesGestor = new HabitacionControlador;
