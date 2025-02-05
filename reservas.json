@@ -1,22 +1,6 @@
 {
     "reservas": [
         {
-            "id": 13,
-            "fechaInicio": "2025-01-20",
-            "fechaFin": "2025-01-25",
-            "habitacion": "4",
-            "costo": 200000,
-            "usuarioDni": "12345678"
-        },
-        {
-            "id": 14,
-            "fechaInicio": "2024-11-20",
-            "fechaFin": "2024-11-27",
-            "habitacion": "4",
-            "costo": 280000,
-            "usuarioDni": "111111"
-        },
-        {
             "id": 16,
             "fechaInicio": "2025-01-25",
             "fechaFin": "2025-01-26",
@@ -42,10 +26,10 @@
         },
         {
             "id": 22,
-            "fechaInicio": "2025-05-26",
-            "fechaFin": "2025-05-28",
-            "habitacion": "4",
-            "costo": 80000,
+            "fechaInicio": "2025-07-22",
+            "fechaFin": "2025-07-24",
+            "habitacion": "10",
+            "costo": 68000,
             "usuarioDni": "36608470"
         }
     ]

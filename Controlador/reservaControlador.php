@@ -177,7 +177,24 @@ class ReservaControlador
         return null;
         }
 
-    
+        public function mostrarReservasPorHabitacion($habitacionId)
+        {
+            $reservasAsociadas = [];
+        
+            foreach ($this->reservas as $reserva) {
+                if ($reserva->getHabitacion()->getNumero() == $habitacionId) {
+                    $reservasAsociadas[] = [
+                        'id' => $reserva->getId(),
+                        'fechaInicio' => $reserva->getFechaInicio(),
+                        'fechaFin' => $reserva->getFechaFin(),
+                        'costo' => $reserva->getCosto(),
+                        'usuarioDni' => $reserva->getUsuarioDni()
+                    ];
+                }
+            }
+        
+            return $reservasAsociadas;
+        }
  
 
     

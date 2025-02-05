@@ -1,6 +1,7 @@
 <?php
 
 require_once 'Modelo/habitacion.php';
+require_once 'Controlador/reservaControlador.php'; // Asegúrate de incluir el controlador de reservas
 
 class HabitacionControlador
 {
@@ -8,17 +9,20 @@ class HabitacionControlador
 
     private $archivoJson = 'habitacion.json';
 
+    private $reservasControlador; // Controlador de reservas
+
     public function __construct()
     {
         $this->cargarDesdeJSON();
+        $this->reservasControlador = new ReservaControlador($this);
     }
+
     // CRUD
 
     public function agregarHabitacion($habitacion)
     {
         $this->habitaciones[] = $habitacion;
         $this->guardarEnJSON();
-
     }
 
     public function obtenerHabitaciones()
@@ -57,18 +61,13 @@ class HabitacionControlador
             if ($habitacion->getNumero() == $numero) {
                 if (isset($nuevosDatos['tipo'])) { //isset chequea que no es nulo
                     $habitacion->setTipo($nuevosDatos['tipo']);
-                } else {
-                    $habitacion->setTipo($habitacion->getTipo());
                 }
 
                 if (isset($nuevosDatos['precio'])) {
                     $habitacion->setPrecio($nuevosDatos['precio']);
-                } else {
-                    $habitacion->setPrecio($habitacion->getPrecio());
                 }
 
                 $this->guardarEnJSON();
-
                 return true;
             }
         }
@@ -76,20 +75,36 @@ class HabitacionControlador
         return false;
     }
 
-    public function eliminarHabitacion($numero)
-{
-    foreach ($this->habitaciones as $indice => $habitacion) {
-        if ($habitacion->getNumero() == $numero) {
-            unset($this->habitaciones[$indice]);
-            $this->habitaciones = array_values($this->habitaciones); // Reacomoda los indices del array  
-            $this->guardarEnJSON(); 
-
-            return true;
+    public function eliminarHabitacion($habitacionId)
+    {
+        // Primero, buscar todas las reservas asociadas a la habitación
+        $reservasAsociadas = $this->reservasControlador->mostrarReservasPorHabitacion($habitacionId);
+    
+        // Crear notificaciones y eliminar las reservas asociadas
+        foreach ($reservasAsociadas as $reserva) {
+            // Crear notificación para el usuario
+            $notificacionControlador = new NotificacionControlador();
+            $mensaje = "Tu reserva (ID: {$reserva['id']}) para la habitación {$habitacionId} fue cancelada porque la habitación fue eliminada.";
+            
+            // Crear la notificación
+            $notificacion = new Notificacion($reserva['id'], $mensaje, $reserva['usuarioDni']);
+            $notificacionControlador->guardarNotificacion($notificacion);
+    
+            // Eliminar la reserva
+            $this->reservasControlador->eliminarReserva($reserva['id']);
         }
+    
+        // Ahora eliminar la habitación
+        $habitacionesFiltradas = array_filter($this->habitaciones, function($habitacion) use ($habitacionId) {
+            return $habitacion->getNumero() !== $habitacionId; // Filtrar la habitación a eliminar
+        });
+    
+        // Guardar las habitaciones restantes
+        $this->habitaciones = array_values($habitacionesFiltradas); // Reindexar el array
+        $this->guardarEnJSON(); // Guardar cambios en el archivo JSON
+    
+        return "Habitación y reservas asociadas eliminadas exitosamente.";
     }
-
-    return false; 
-}
 
     // Json
 
@@ -111,7 +126,6 @@ class HabitacionControlador
             'numero' => $habitacion->getNumero(),
             'tipo' => $habitacion->getTipo(),
             'precio' => $habitacion->getPrecio(),
-
         ];
     }
 
@@ -123,7 +137,7 @@ class HabitacionControlador
             $this->habitaciones = []; // Asegura que se vacie el array antes de cargar los datos
 
             foreach ($habitacionesArray as $habitacionData) {
-                $habitacion = new Habitacion;
+                $habitacion = new Habitacion();
                 $habitacion->setNumero($habitacionData['numero']);
                 $habitacion->setTipo($habitacionData['tipo']);
                 $habitacion->setPrecio($habitacionData['precio']);
@@ -132,3 +146,4 @@ class HabitacionControlador
         }
     }
 }
+
