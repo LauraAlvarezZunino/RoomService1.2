@@ -146,10 +146,10 @@ function registrarse($usuariosGestor)
     while (true) {
         echo 'Ingrese el nombre y apellido del usuario: ';
         $nombreApellido = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z\s]+$/", $nombreApellido)) { // \s espacios
+        if (preg_match("/^[a-zA-Z\s]{3,}$/", $nombreApellido)) { // \s espacios
             break;
         } else {
-            echo "Por favor, ingrese solo letras y espacios para el nombre y apellido.\n";
+            echo "Por favor, ingrese solo letras y espacios para el nombre y apellido, con un minimo de 3 caracteres.\n";
         }
     }
 
@@ -184,20 +184,20 @@ function registrarse($usuariosGestor)
         if (preg_match("/^\d{10,11}$/", $telefono)) {
             break; 
         } else {
-            echo "El teléfono debe contener solo números. Por favor, intente nuevamente.\n";
+            echo "El teléfono debe contener 10 u 11 números. Por favor, intente nuevamente.\n";
         }
     }
 
     while (true) {
         echo 'Ingrese la clave del usuario: ';
         $clave = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z0-9]+$/", $clave)) { 
+        if (preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) { 
             break; 
         } else {
-            echo "La clave debe contener solo letras y/o números. Por favor, intente nuevamente.\n";
+            echo "La clave debe contener solo letras y/o números y tener entre 4 y 8 caracteres. Por favor, intente nuevamente.\n";
         }
     }
-
+   
     $usuariosGestor->crearUsuario($nombreApellido, $dni, $email, $telefono, $clave);
     echo "Usuario agregado exitosamente.\n";
 

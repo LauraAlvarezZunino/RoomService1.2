@@ -172,10 +172,10 @@ function modificarUsuario($usuario, $esAdministrador = false)
         echo 'Introduce el nuevo nombre (deja vacío para mantener el actual): ';
         $nombreApellido = trim(fgets(STDIN));
 
-        if ($nombreApellido === "" || preg_match("/^[a-zA-Z\s]+$/", $nombreApellido)) {
+        if ($nombreApellido === "" || preg_match("/^[a-zA-Z\s]{3,}$/", $nombreApellido)) {
             break;
         } else {
-            echo "Por favor, ingrese solo letras y espacios para el nombre y apellido.\n";
+            echo "Por favor, ingrese solo letras y espacios para el nombre y apellido con un minimo de 3 caracteres.\n";
         }
     }
 
@@ -207,13 +207,13 @@ function modificarUsuario($usuario, $esAdministrador = false)
     while (true) {
         echo 'Introduce la nueva clave (deja vacío para mantener la actual): ';
         $clave = trim(fgets(STDIN));
-
-        if ($clave === "" || preg_match("/^[a-zA-Z0-9]+$/", $clave)) {
-            break;
+        if (preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) { 
+            break; 
         } else {
-            echo "La clave debe contener solo letras y/o números. Por favor, intente nuevamente.\n";
+            echo "La clave debe contener solo letras y/o números y tener entre 4 y 8 caracteres. Por favor, intente nuevamente.\n";
         }
     }
+   
 
     // Actualizar datos, solo si fueron modificados
     $nuevosDatos = [
