@@ -112,6 +112,7 @@ class UsuarioControlador
     return false; 
 }
 
+
     private function guardarEnJSON()
     {
         $usuariosArray = array_map([$this, 'usuarioToArray'], $this->usuarios); //aplica una funcion a cada elemento de uno o mas arrays

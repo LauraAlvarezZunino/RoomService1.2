@@ -29,7 +29,7 @@ class Notificacion
         return $this->usuarioDni;
     }
 
-    // Método para convertir el objeto a un array asociativo para guardarlo en JSON
+ 
     public function toArray()
     {
         return [

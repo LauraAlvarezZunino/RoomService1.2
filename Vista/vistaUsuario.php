@@ -9,7 +9,7 @@ function menuUsuario()
     $usuariosGestor = new UsuarioControlador;
     $habitacionesGestor = new HabitacionControlador;
     $reservasGestor = new ReservaControlador($habitacionesGestor);
-
+    $notificacionControlador = new NotificacionControlador(); 
 
     echo "=== Menú Usuario ===\n";
     echo "1. Registrarme\n";
@@ -36,7 +36,7 @@ function menuUsuario()
             
             if ($usuario && $usuario->getClave() === $clave) {
                 // Si se encuentra un usuario y la clave coincide, accede al menú
-                menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor);
+                menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor,$notificacionControlador);
             } else {
                 // Si no se encuentra o la clave no coincide, muestra un mensaje de error
                 echo "DNI o clave incorrectos. Inténtelo de nuevo.\n";
@@ -51,7 +51,7 @@ function menuUsuario()
             break;
     }
 }
-function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor)
+function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor,$notificacionControlador)
 {
     global $dniGuardado;
     while (true) {
@@ -63,8 +63,9 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
         echo "5. Eliminar Reserva\n";
         echo "6. Ver mis datos\n";
         echo "7. Modificar mis datos\n";
-        echo "8. Marcar notificaciones como leidas\n";
-        echo "9. Salir\n";
+        echo "8. Ver mis notificaciones\n";
+        echo "9. Marcar notificaciones como leidas\n";
+        echo "0. Salir\n";
         echo 'Seleccione una opción: ';
 
         $opcion = trim(fgets(STDIN));
@@ -92,11 +93,20 @@ function menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $
                 modificarUsuario($usuario);
                 break;
             case 8:
-                $notificacionControlador = new NotificacionControlador(); // Asegúrate de que esta clase esté incluida y cargada
+                $resultado = $notificacionControlador->mostrarNotificacionesPorDni($dniGuardado);
+                if (is_array($resultado)) {
+                    foreach ($resultado as $notificacion) {
+                    echo  $notificacion['notificacion'] ."\n"; 
+                }} else {
+                    echo $resultado; 
+                }
+             
+                break;
+            case 9:
                 $notificacionControlador->eliminarNotificacionesPorDni($dniGuardado);
                 echo "Notificaciones marcadas como leídas y eliminadas.\n";
                 break;
-            case 9:
+            case 0:
                 echo "Saliendo del sistema...\n";
                 return;
             default:

@@ -1,6 +1,5 @@
 <?php 
 include_once 'Modelo/notificacion.php';
-
 class NotificacionControlador
 {
     private $archivoNotificaciones;
@@ -10,7 +9,7 @@ class NotificacionControlador
         $this->archivoNotificaciones = $archivoNotificaciones;
     }
 
-    // Cargar notificaciones desde el archivo JSON
+
     public function cargarNotificaciones()
     {
         if (!file_exists($this->archivoNotificaciones)) {
@@ -23,7 +22,6 @@ class NotificacionControlador
         return is_array($notificaciones) ? $notificaciones : [];
     }
 
-    // Guardar una notificación en el archivo JSON
     public function guardarNotificacion(Notificacion $notificacion)
     {
         $notificaciones = $this->cargarNotificaciones();
@@ -32,7 +30,7 @@ class NotificacionControlador
         file_put_contents($this->archivoNotificaciones, json_encode($notificaciones, JSON_PRETTY_PRINT));
     }
 
-    // Mostrar todas las notificaciones de una reserva específica
+
     public function mostrarNotificaciones($reservaId)
     {
         $notificaciones = $this->cargarNotificaciones();
@@ -43,20 +41,31 @@ class NotificacionControlador
         return array_values($notificacionesReserva); // Reindexa el array
     }
 
-    // Método para eliminar las notificaciones de un usuario
+   
+   // Mostrar todas las notificaciones de un usuario específico
+public function mostrarNotificacionesPorDni($dni)
+{
+    $notificaciones = $this->cargarNotificaciones();
+    $notificacionesUsuario = array_filter($notificaciones, function($notificacion) use ($dni) {
+        return isset($notificacion['usuario_dni']) && $notificacion['usuario_dni'] == $dni;
+    });
+
+    // Verificar si hay notificaciones para el usuario
+    if (empty($notificacionesUsuario)) {
+        return "No hay notificaciones para su usuario"; 
+    }
+
+    return array_values($notificacionesUsuario); // Reindexa el array si hay notificaciones
+}
+
+
     public function eliminarNotificacionesPorDni($dni)
     {
         $notificaciones = $this->cargarNotificaciones();
-
-        // Filtrar las notificaciones que no pertenecen al usuario con el DNI dado
         $notificaciones = array_filter($notificaciones, function($notificacion) use ($dni) {
             return isset($notificacion['usuario_dni']) && $notificacion['usuario_dni'] !== $dni;
         });
 
-        // Guardamos nuevamente las notificaciones restantes
         file_put_contents($this->archivoNotificaciones, json_encode(array_values($notificaciones), JSON_PRETTY_PRINT));
     }
 }
-
-
-

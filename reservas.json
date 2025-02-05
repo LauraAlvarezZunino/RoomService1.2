@@ -39,6 +39,14 @@
             "habitacion": "1",
             "costo": 3000000,
             "usuarioDni": "111111"
+        },
+        {
+            "id": 22,
+            "fechaInicio": "2025-05-26",
+            "fechaFin": "2025-05-28",
+            "habitacion": "4",
+            "costo": 80000,
+            "usuarioDni": "36608470"
         }
     ]
 }
