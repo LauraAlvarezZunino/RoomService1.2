@@ -65,11 +65,16 @@ function agregarHabitacion($habitacionesGestor)
     }
 }
 
-function modificarHabitacion($habitacionesGestor)
-{
-    echo 'Ingrese el número de la habitación que desea modificar: ';
-    $numero = trim(fgets(STDIN));
+function modificarHabitacion($habitacionesGestor){
+    while (true) {
+        echo 'Ingrese el número de la habitación que desea modificar: ';
+        $numero = trim(fgets(STDIN));
 
+        // Validar que el número de habitación sea solo dígitos
+        if (!preg_match('/^\d+$/', $numero)) {
+            echo "Error: El número de habitación debe ser un valor numérico.\n";
+            continue; // Vuelve a solicitar el número
+        }
     $habitacion = null;
     foreach ($habitacionesGestor->obtenerHabitaciones() as $h) {
         if ($h->getNumero() == $numero) {
@@ -120,17 +125,25 @@ function modificarHabitacion($habitacionesGestor)
         echo "La habitación con número $numero no existe.\n";
     }
 }
-
+}
 
 function eliminaHabitacion($habitacionesGestor)
 {
-    echo 'Ingrese el número de la habitación que desea eliminar: ';
-    $numero = trim(fgets(STDIN));
+    while (true) {
+        echo 'Ingrese el número de la habitación que desea eliminar: ';
+        $numero = trim(fgets(STDIN));
 
-    if ($habitacionesGestor->eliminarHabitacion($numero)) {
-        echo "Habitación eliminada correctamente.\n";
-    } else {
-        echo "Error al eliminar la habitación.\n";
+        // Validar que el número de habitación sea solo dígitos
+        if (!preg_match('/^\d+$/', $numero)) {
+            echo "Error: El número de habitación debe ser un valor numérico.\n";
+            continue; // Vuelve a solicitar el número
+        }
+
+        // Llamar a eliminarHabitacion y mostrar el mensaje devuelto
+        $resultado = $habitacionesGestor->eliminarHabitacion($numero);
+        echo $resultado . "\n"; // Muestra el mensaje devuelto por eliminarHabitacion
+
+        break; // Sale del bucle después de intentar eliminar la habitación
     }
 }
 

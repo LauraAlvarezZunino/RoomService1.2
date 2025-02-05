@@ -77,6 +77,13 @@ class HabitacionControlador
 
     public function eliminarHabitacion($habitacionId)
     {
+        // Verificar si la habitación existe
+        $habitacionExistente = $this->buscarHabitacionPorNumero($habitacionId);
+    
+        if (!$habitacionExistente) {
+            return "Error: No existe una habitación con el número $habitacionId.";
+        }
+    
         // Primero, buscar todas las reservas asociadas a la habitación
         $reservasAsociadas = $this->reservasControlador->mostrarReservasPorHabitacion($habitacionId);
     
@@ -99,13 +106,17 @@ class HabitacionControlador
             return $habitacion->getNumero() !== $habitacionId; // Filtrar la habitación a eliminar
         });
     
-        // Guardar las habitaciones restantes
-        $this->habitaciones = array_values($habitacionesFiltradas); // Reindexar el array
-        $this->guardarEnJSON(); // Guardar cambios en el archivo JSON
+        // Verificar si la habitación fue eliminada
+        if (count($habitacionesFiltradas) < count($this->habitaciones)) {
+            // Guardar las habitaciones restantes
+            $this->habitaciones = array_values($habitacionesFiltradas); // Reindexar el array
+            $this->guardarEnJSON(); // Guardar cambios en el archivo JSON
     
-        return "Habitación y reservas asociadas eliminadas exitosamente.";
+            return "Habitación y reservas asociadas eliminadas exitosamente.";
+        } else {
+            return "Error: No se pudo eliminar la habitación con el número $habitacionId.";
+        }
     }
-
     // Json
 
     public function guardarEnJSON()
