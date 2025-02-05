@@ -35,6 +35,8 @@ function menuAdmin()
 function menuAdminUsuarios()
 {
     $usuariosGestor = new UsuarioControlador;
+    $habitacionesGestor = new HabitacionControlador;
+    $reservaControlador = new ReservaControlador($habitacionesGestor);
     while (true) {
         echo "=== Menú Administrar Usuarios ===\n";
         echo "1. Mostrar Usuarios\n";
@@ -53,7 +55,7 @@ function menuAdminUsuarios()
                 modificarUsuario($usuariosGestor, true);
                 return;
             case 3:
-                eliminaUsuario($usuariosGestor);
+                eliminaUsuario($usuariosGestor, $reservaControlador);
                 break;
             case 4:
                 return;
@@ -63,6 +65,7 @@ function menuAdminUsuarios()
         }
     }
 }
+
 
 
 

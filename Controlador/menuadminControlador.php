@@ -143,13 +143,35 @@ function mostrarUsuarios($usuariosGestor)
     }
 }
 
-function eliminaUsuario($usuariosGestor) {
-    echo 'Ingrese el ID a eliminar: ';
+function eliminaUsuario($usuariosGestor, $reservaControlador) {
+    echo 'Ingrese el ID del usuario a eliminar: ';
     $idEliminado = trim(fgets(STDIN)); // Captura el ID del usuario a eliminar
 
+    // Obtener el usuario por ID
+    $usuario = $usuariosGestor->obtenerUsuarioPorId($idEliminado);
+    
+    if (!$usuario) {
+        echo "El usuario con ID {$idEliminado} no existe.\n";
+        return; // Si no encontramos el usuario, terminamos la función
+    }
+
+    // Obtenemos el DNI del usuario
+    $dniUsuario = $usuario->getDni();
+
+    // Obtener todas las reservas del usuario
+    $reservas = $reservaControlador->obtenerReservas();
+    
+    // Eliminar todas las reservas asociadas al DNI
+    foreach ($reservas as $reserva) {
+        if ($reserva->getUsuarioDni() == $dniUsuario) {
+            $reservaControlador->eliminarReserva($reserva->getId());
+        }
+    }
+
+    // Ahora eliminamos al usuario
     if ($usuariosGestor->eliminarUsuario($idEliminado)) {
-        echo "Usuario {$idEliminado} eliminado correctamente.\n";
+        echo "Usuario con ID {$idEliminado} y sus reservas han sido eliminados correctamente.\n";
     } else {
-        echo "No se pudo eliminar el usuario {$idEliminado}. Puede que no exista.\n";
+        echo "No se pudo eliminar el usuario con ID {$idEliminado}. Puede que no exista.\n";
     }
 }
