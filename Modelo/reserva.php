@@ -7,7 +7,7 @@ class Reserva
     private $id;
     private $fechaInicio;
     private $fechaFin;
-    private Habitacion $habitacion; 
+    private Habitacion $habitacion;
     private $costo;
     private $usuarioDni;
 

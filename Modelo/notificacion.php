@@ -29,13 +29,13 @@ class Notificacion
         return $this->usuarioDni;
     }
 
- 
+
     public function toArray()
     {
         return [
             'reserva_id' => $this->reservaId,
             'notificacion' => $this->mensaje,
-            'usuario_dni' => $this->usuarioDni,  
+            'usuario_dni' => $this->usuarioDni,
         ];
     }
 }

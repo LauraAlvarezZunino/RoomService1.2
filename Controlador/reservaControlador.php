@@ -32,9 +32,11 @@ class ReservaControlador
         }
 
         foreach ($this->reservas as $existeReserva) {
-            if ($existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+            if (
+                $existeReserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
                 !($reserva->getFechaFin() < $existeReserva->getFechaInicio() ||
-                  $reserva->getFechaInicio() > $existeReserva->getFechaFin())) {
+                    $reserva->getFechaInicio() > $existeReserva->getFechaFin())
+            ) {
 
                 echo "La habitación número {$habitacion->getNumero()} ya está reservada en las fechas solicitadas ({$reserva->getFechaInicio()} a {$reserva->getFechaFin()}).\n";
 
@@ -49,7 +51,7 @@ class ReservaControlador
                     if (!empty($habitacionesCercanas)) {
                         echo "No hay habitaciones disponibles para las fechas solicitadas.\n", "Habitaciones disponibles en fechas cercanas:\n";
                         foreach ($habitacionesCercanas as $cercana) {
-                            echo "- Habitación Número: " . $cercana['habitacion']->getNumero() . ", Tipo: " . $cercana['habitacion']->getTipo() . ", Precio: " . $cercana['habitacion']->getPrecio() . ", Disponible desde: " . $cercana['fechaInicio']. "\n";
+                            echo "- Habitación Número: " . $cercana['habitacion']->getNumero() . ", Tipo: " . $cercana['habitacion']->getTipo() . ", Precio: " . $cercana['habitacion']->getPrecio() . ", Disponible desde: " . $cercana['fechaInicio'] . "\n";
                         }
                     } else {
                         echo "No se encontraron habitaciones disponibles en fechas cercanas.\n";
@@ -73,8 +75,10 @@ class ReservaControlador
             $disponible = true;
 
             foreach ($this->reservas as $reserva) {
-                if ($reserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
-                    !($fechaFin < $reserva->getFechaInicio() || $fechaInicio > $reserva->getFechaFin())) {
+                if (
+                    $reserva->getHabitacion()->getNumero() == $habitacion->getNumero() &&
+                    !($fechaFin < $reserva->getFechaInicio() || $fechaInicio > $reserva->getFechaFin())
+                ) {
                     $disponible = false;
                     break;
                 }
@@ -175,45 +179,45 @@ class ReservaControlador
         }
 
         return null;
+    }
+
+    public function mostrarReservasPorHabitacion($habitacionId)
+    {
+        $reservasAsociadas = [];
+
+        foreach ($this->reservas as $reserva) {
+            if ($reserva->getHabitacion()->getNumero() == $habitacionId) {
+                $reservasAsociadas[] = [
+                    'id' => $reserva->getId(),
+                    'fechaInicio' => $reserva->getFechaInicio(),
+                    'fechaFin' => $reserva->getFechaFin(),
+                    'costo' => $reserva->getCosto(),
+                    'usuarioDni' => $reserva->getUsuarioDni()
+                ];
+            }
         }
 
-        public function mostrarReservasPorHabitacion($habitacionId)
-        {
-            $reservasAsociadas = [];
-        
-            foreach ($this->reservas as $reserva) {
-                if ($reserva->getHabitacion()->getNumero() == $habitacionId) {
-                    $reservasAsociadas[] = [
-                        'id' => $reserva->getId(),
-                        'fechaInicio' => $reserva->getFechaInicio(),
-                        'fechaFin' => $reserva->getFechaFin(),
-                        'costo' => $reserva->getCosto(),
-                        'usuarioDni' => $reserva->getUsuarioDni()
-                    ];
+        return $reservasAsociadas;
+    }
+
+    function verificarDisponibilidad($numeroHabitacion, $fechaInicio, $fechaFin, $excluirReservaId = null)
+    {
+        foreach ($this->reservas as $reserva) {
+            if ($reserva->getHabitacion()->getNumero() == $numeroHabitacion && $reserva->getId() != $excluirReservaId) {
+                $solapa = ($fechaInicio < $reserva->getFechaFin() && $fechaFin > $reserva->getFechaInicio());
+                if ($solapa) {
+                    return true; // Habitación ocupada
                 }
             }
-        
-            return $reservasAsociadas;
         }
- 
-        function verificarDisponibilidad($numeroHabitacion, $fechaInicio, $fechaFin, $excluirReservaId = null)
-{
-    foreach ($this->reservas as $reserva) {
-        if ($reserva->getHabitacion()->getNumero() == $numeroHabitacion && $reserva->getId() != $excluirReservaId) {
-            $solapa = ($fechaInicio < $reserva->getFechaFin() && $fechaFin > $reserva->getFechaInicio());
-            if ($solapa) {
-                return true; // Habitación ocupada
-            }
-        }
+        return false; // Habitación disponible
     }
-    return false; // Habitación disponible
-}
-    
-    
+
+
     public function guardarEnJSON()
     {
         $reservasArray = [];
-    
+
         foreach ($this->reservas as $reserva) {
             $reservasArray[] = [
                 'id' => $reserva->getId(),
@@ -224,11 +228,11 @@ class ReservaControlador
                 'usuarioDni' => $reserva->getUsuarioDni()
             ];
         }
-    
+
         $datosNuevos = ['reservas' => $reservasArray];
         file_put_contents($this->reservaJson, json_encode($datosNuevos, JSON_PRETTY_PRINT));
     }
-    
+
     public function cargarDesdeJSON()
     {
         if (file_exists($this->reservaJson)) {
@@ -261,7 +265,7 @@ class ReservaControlador
                     $usuarioDni
                 );
 
-               
+
 
                 $this->reservas[] = $reserva;
 

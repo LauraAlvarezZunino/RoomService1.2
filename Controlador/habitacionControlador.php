@@ -47,7 +47,7 @@ class HabitacionControlador
         $tipo = strtolower($tipo); // starlower pasa a minuscula
 
         foreach ($this->habitaciones as $habitacion) {
-            if (strtolower($habitacion->getTipo()) == $tipo) { 
+            if (strtolower($habitacion->getTipo()) == $tipo) {
                 $resultados[] = $habitacion;
             }
         }
@@ -79,39 +79,39 @@ class HabitacionControlador
     {
         // Verificar si la habitación existe
         $habitacionExistente = $this->buscarHabitacionPorNumero($habitacionId);
-    
+
         if (!$habitacionExistente) {
             return "Error: No existe una habitación con el número $habitacionId.";
         }
-    
+
         // Primero, buscar todas las reservas asociadas a la habitación
         $reservasAsociadas = $this->reservasControlador->mostrarReservasPorHabitacion($habitacionId);
-    
+
         // Crear notificaciones y eliminar las reservas asociadas
         foreach ($reservasAsociadas as $reserva) {
             // Crear notificación para el usuario
             $notificacionControlador = new NotificacionControlador();
             $mensaje = "Tu reserva (ID: {$reserva['id']}) para la habitación {$habitacionId} fue cancelada porque la habitación fue eliminada.";
-            
+
             // Crear la notificación
             $notificacion = new Notificacion($reserva['id'], $mensaje, $reserva['usuarioDni']);
             $notificacionControlador->guardarNotificacion($notificacion);
-    
+
             // Eliminar la reserva
             $this->reservasControlador->eliminarReserva($reserva['id']);
         }
-    
+
         // Ahora eliminar la habitación
-        $habitacionesFiltradas = array_filter($this->habitaciones, function($habitacion) use ($habitacionId) {
+        $habitacionesFiltradas = array_filter($this->habitaciones, function ($habitacion) use ($habitacionId) {
             return $habitacion->getNumero() !== $habitacionId; // Filtrar la habitación a eliminar
         });
-    
+
         // Verificar si la habitación fue eliminada
         if (count($habitacionesFiltradas) < count($this->habitaciones)) {
             // Guardar las habitaciones restantes
             $this->habitaciones = array_values($habitacionesFiltradas); // Reindexar el array
             $this->guardarEnJSON(); // Guardar cambios en el archivo JSON
-    
+
             return "Habitación y reservas asociadas eliminadas exitosamente.";
         } else {
             return "Error: No se pudo eliminar la habitación con el número $habitacionId.";
@@ -157,4 +157,3 @@ class HabitacionControlador
         }
     }
 }
-

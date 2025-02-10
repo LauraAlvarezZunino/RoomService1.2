@@ -13,7 +13,6 @@ class Habitacion
         $this->numero = $numero;
         $this->tipo = $tipo;
         $this->precio = $precio;
-
     }
 
     // Getters y Setters

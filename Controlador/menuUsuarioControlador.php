@@ -77,7 +77,7 @@ function calcularCostoReserva($fechaInicio, $fechaFin, $precioPorNoche)
     $fechaFin = new DateTime($fechaFin);
     $diferencia = $fechaInicio->diff($fechaFin);
 
-    return $diferencia->days * $precioPorNoche; 
+    return $diferencia->days * $precioPorNoche;
 }
 
 function solicitarTipoHabitacion()
@@ -139,10 +139,10 @@ function mostrarDatosUsuario()
     }
 }
 
-function registrarse($usuariosGestor) 
+function registrarse($usuariosGestor)
 {
     echo "=== Registro de Usuario ===\n";
-    
+
     while (true) {
         echo 'Ingrese el nombre y apellido del usuario: ';
         $nombreApellido = trim(fgets(STDIN));
@@ -172,7 +172,7 @@ function registrarse($usuariosGestor)
         echo 'Ingrese el email del usuario: ';
         $email = trim(fgets(STDIN));
         if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            break; 
+            break;
         } else {
             echo "Por favor, ingrese un email válido.\n";
         }
@@ -182,7 +182,7 @@ function registrarse($usuariosGestor)
         echo 'Ingrese el teléfono del usuario: ';
         $telefono = trim(fgets(STDIN));
         if (preg_match("/^\d{10,11}$/", $telefono)) {
-            break; 
+            break;
         } else {
             echo "El teléfono debe contener 10 u 11 números. Por favor, intente nuevamente.\n";
         }
@@ -191,13 +191,13 @@ function registrarse($usuariosGestor)
     while (true) {
         echo 'Ingrese la clave del usuario: ';
         $clave = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) { 
-            break; 
+        if (preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) {
+            break;
         } else {
             echo "La clave debe contener solo letras y/o números y tener entre 4 y 8 caracteres. Por favor, intente nuevamente.\n";
         }
     }
-   
+
     $usuariosGestor->crearUsuario($nombreApellido, $dni, $email, $telefono, $clave);
     echo "Usuario agregado exitosamente.\n";
 

@@ -164,7 +164,7 @@ function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
     if ($esAdmin) {
         $notificacionControlador = new NotificacionControlador();
         $mensaje = "Tu reserva (ID: {$reserva->getId()}) fue eliminada por un administrador.";
-        
+
         // Si $usuario es null, usa el DNI del dueño de la reserva
         $usuarioDni = $usuario ? $usuario->getDni() : $reserva->getUsuarioDni();
 
@@ -184,7 +184,7 @@ function modificarUsuario($usuario, $esAdministrador = false)
 {
     global $dniGuardado;
     $usuariosGestor = new UsuarioControlador;
-    
+
     // Si no es administrador, obtener usuario por su propio DNI
     if (!$esAdministrador) {
         $usuario = $usuariosGestor->obtenerUsuarioPorDni($dniGuardado);
@@ -251,13 +251,13 @@ function modificarUsuario($usuario, $esAdministrador = false)
     while (true) {
         echo 'Introduce la nueva clave (deja vacío para mantener la actual): ';
         $clave = trim(fgets(STDIN));
-        if ($clave === "" || preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) { 
-            break; 
+        if ($clave === "" || preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) {
+            break;
         } else {
             echo "La clave debe contener solo letras y/o números y tener entre 4 y 8 caracteres. Por favor, intente nuevamente.\n";
         }
     }
-   
+
 
     // Actualizar datos, solo si fueron modificados
     $nuevosDatos = [

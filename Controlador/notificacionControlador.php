@@ -1,4 +1,4 @@
-<?php 
+<?php
 include_once 'Modelo/notificacion.php';
 class NotificacionControlador
 {
@@ -34,35 +34,35 @@ class NotificacionControlador
     public function mostrarNotificaciones($reservaId)
     {
         $notificaciones = $this->cargarNotificaciones();
-        $notificacionesReserva = array_filter($notificaciones, function($notificacion) use ($reservaId) {
+        $notificacionesReserva = array_filter($notificaciones, function ($notificacion) use ($reservaId) {
             return isset($notificacion['reserva_id']) && $notificacion['reserva_id'] == $reservaId;
         });
 
         return array_values($notificacionesReserva); // Reindexa el array
     }
 
-   
-   // Mostrar todas las notificaciones de un usuario específico
-public function mostrarNotificacionesPorDni($dni)
-{
-    $notificaciones = $this->cargarNotificaciones();
-    $notificacionesUsuario = array_filter($notificaciones, function($notificacion) use ($dni) {
-        return isset($notificacion['usuario_dni']) && $notificacion['usuario_dni'] == $dni;
-    });
 
-    // Verificar si hay notificaciones para el usuario
-    if (empty($notificacionesUsuario)) {
-        return "No hay notificaciones para su usuario"; 
+    // Mostrar todas las notificaciones de un usuario específico
+    public function mostrarNotificacionesPorDni($dni)
+    {
+        $notificaciones = $this->cargarNotificaciones();
+        $notificacionesUsuario = array_filter($notificaciones, function ($notificacion) use ($dni) {
+            return isset($notificacion['usuario_dni']) && $notificacion['usuario_dni'] == $dni;
+        });
+
+        // Verificar si hay notificaciones para el usuario
+        if (empty($notificacionesUsuario)) {
+            return "No hay notificaciones para su usuario";
+        }
+
+        return array_values($notificacionesUsuario); // Reindexa el array si hay notificaciones
     }
-
-    return array_values($notificacionesUsuario); // Reindexa el array si hay notificaciones
-}
 
 
     public function eliminarNotificacionesPorDni($dni)
     {
         $notificaciones = $this->cargarNotificaciones();
-        $notificaciones = array_filter($notificaciones, function($notificacion) use ($dni) {
+        $notificaciones = array_filter($notificaciones, function ($notificacion) use ($dni) {
             return isset($notificacion['usuario_dni']) && $notificacion['usuario_dni'] !== $dni;
         });
 

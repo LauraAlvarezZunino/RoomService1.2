@@ -9,7 +9,7 @@ function validarTipoHabitacion($tipo)
 
 function validarPrecio($precio)
 {
-    return preg_match('/^\d+$/', $precio); 
+    return preg_match('/^\d+$/', $precio);
 }
 
 function agregarHabitacion($habitacionesGestor)
@@ -17,12 +17,12 @@ function agregarHabitacion($habitacionesGestor)
     while (true) {
         echo 'Ingrese el número de la habitación: ';
         $numero = trim(fgets(STDIN));
-        
+
         if (!preg_match('/^\d+$/', $numero)) {
             echo "El número de habitación debe ser un valor numérico.\n";
-            continue; 
+            continue;
         }
-    
+
         $habitacionExistente = false;
         foreach ($habitacionesGestor->obtenerHabitaciones() as $h) {
             if ($h->getNumero() == $numero) {
@@ -30,42 +30,43 @@ function agregarHabitacion($habitacionesGestor)
                 break;
             }
         }
-    
+
         if ($habitacionExistente) {
             echo "La habitación con el número $numero ya existe. No se puede duplicar.\n";
-            continue; 
+            continue;
         }
 
- 
+
         while (true) {
             echo 'Ingrese el tipo de habitación: ';
             $tipo = trim(fgets(STDIN));
-            
+
             if (validarTipoHabitacion($tipo)) {
                 break;
             } else {
                 echo "El tipo de habitación debe ser uno de los siguientes: simple, doble, o familiar.\n";
             }
-        }    
-      
+        }
+
         while (true) {
             echo 'Ingrese el precio por noche: ';
             $precio = trim(fgets(STDIN));
-            
+
             if (validarPrecio($precio)) {
                 break;
             } else {
                 echo "El precio debe ser un número entero válido.\n";
             }
         }
-          
+
         $habitacionesGestor->agregarHabitacion(new Habitacion($numero, $tipo, $precio));
         echo "Habitación agregada exitosamente.\n";
-        break; 
+        break;
     }
 }
 
-function modificarHabitacion($habitacionesGestor){
+function modificarHabitacion($habitacionesGestor)
+{
     while (true) {
         echo 'Ingrese el número de la habitación que desea modificar: ';
         $numero = trim(fgets(STDIN));
@@ -75,56 +76,56 @@ function modificarHabitacion($habitacionesGestor){
             echo "Error: El número de habitación debe ser un número entero.\n";
             continue; // Vuelve a solicitar el número
         }
-    $habitacion = null;
-    foreach ($habitacionesGestor->obtenerHabitaciones() as $h) {
-        if ($h->getNumero() == $numero) {
-            $habitacion = $h;
-            break;
-        }
-    }
-
-    if ($habitacion) {
-        echo "Modificando habitación número: $numero\n";
- 
-        while (true) {
-            echo "Ingrese el nuevo tipo de habitación (deje vacío para mantener el actual: {$habitacion->getTipo()}): ";
-            $nuevoTipo = trim(fgets(STDIN));
-            
-            if ($nuevoTipo === '' || validarTipoHabitacion($nuevoTipo)) {
-                $nuevoTipo = $nuevoTipo ?: $habitacion->getTipo();
+        $habitacion = null;
+        foreach ($habitacionesGestor->obtenerHabitaciones() as $h) {
+            if ($h->getNumero() == $numero) {
+                $habitacion = $h;
                 break;
-            } else {
-                echo "El tipo de habitación debe ser uno de los siguientes: simple, doble, o familiar.\n";
-            }
-        }
-        
-        while (true) {
-            echo "Ingrese el nuevo precio (deje vacío para mantener el actual: {$habitacion->getPrecio()}): ";
-            $nuevoPrecio = trim(fgets(STDIN));
-            
-            // Si no se ingresó nada, mantiene el precio actual
-            if ($nuevoPrecio === '' || validarPrecio($nuevoPrecio)) {
-                $nuevoPrecio = $nuevoPrecio ?: $habitacion->getPrecio();
-                break;
-            } else {
-                echo "El precio debe ser un número entero válido.\n";
             }
         }
 
-        $nuevosDatos = [
-            'tipo' => $nuevoTipo,
-            'precio' => $nuevoPrecio,
-        ];
+        if ($habitacion) {
+            echo "Modificando habitación número: $numero\n";
 
-        if ($habitacionesGestor->actualizarHabitacion($numero, $nuevosDatos)) {
-            echo "Habitación actualizada correctamente.\n";
+            while (true) {
+                echo "Ingrese el nuevo tipo de habitación (deje vacío para mantener el actual: {$habitacion->getTipo()}): ";
+                $nuevoTipo = trim(fgets(STDIN));
+
+                if ($nuevoTipo === '' || validarTipoHabitacion($nuevoTipo)) {
+                    $nuevoTipo = $nuevoTipo ?: $habitacion->getTipo();
+                    break;
+                } else {
+                    echo "El tipo de habitación debe ser uno de los siguientes: simple, doble, o familiar.\n";
+                }
+            }
+
+            while (true) {
+                echo "Ingrese el nuevo precio (deje vacío para mantener el actual: {$habitacion->getPrecio()}): ";
+                $nuevoPrecio = trim(fgets(STDIN));
+
+                // Si no se ingresó nada, mantiene el precio actual
+                if ($nuevoPrecio === '' || validarPrecio($nuevoPrecio)) {
+                    $nuevoPrecio = $nuevoPrecio ?: $habitacion->getPrecio();
+                    break;
+                } else {
+                    echo "El precio debe ser un número entero válido.\n";
+                }
+            }
+
+            $nuevosDatos = [
+                'tipo' => $nuevoTipo,
+                'precio' => $nuevoPrecio,
+            ];
+
+            if ($habitacionesGestor->actualizarHabitacion($numero, $nuevosDatos)) {
+                echo "Habitación actualizada correctamente.\n";
+            } else {
+                echo "Error al actualizar la habitación.\n";
+            }
         } else {
-            echo "Error al actualizar la habitación.\n";
+            echo "La habitación con número $numero no existe.\n";
         }
-    } else {
-        echo "La habitación con número $numero no existe.\n";
     }
-}
 }
 
 function eliminaHabitacion($habitacionesGestor)
@@ -156,13 +157,14 @@ function mostrarUsuarios($usuariosGestor)
     }
 }
 
-function eliminaUsuario($usuariosGestor, $reservaControlador) {
+function eliminaUsuario($usuariosGestor, $reservaControlador)
+{
     echo 'Ingrese el ID del usuario a eliminar: ';
     $idEliminado = trim(fgets(STDIN)); // Captura el ID del usuario a eliminar
 
     // Obtener el usuario por ID
     $usuario = $usuariosGestor->obtenerUsuarioPorId($idEliminado);
-    
+
     if (!$usuario) {
         echo "El usuario con ID {$idEliminado} no existe.\n";
         return; // Si no encontramos el usuario, terminamos la función
@@ -173,7 +175,7 @@ function eliminaUsuario($usuariosGestor, $reservaControlador) {
 
     // Obtener todas las reservas del usuario
     $reservas = $reservaControlador->obtenerReservas();
-    
+
     // Eliminar todas las reservas asociadas al DNI
     foreach ($reservas as $reserva) {
         if ($reserva->getUsuarioDni() == $dniUsuario) {
