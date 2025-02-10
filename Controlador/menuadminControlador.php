@@ -72,7 +72,7 @@ function modificarHabitacion($habitacionesGestor){
 
         // Validar que el número de habitación sea solo dígitos
         if (!preg_match('/^\d+$/', $numero)) {
-            echo "Error: El número de habitación debe ser un valor numérico.\n";
+            echo "Error: El número de habitación debe ser un número entero.\n";
             continue; // Vuelve a solicitar el número
         }
     $habitacion = null;
@@ -135,7 +135,7 @@ function eliminaHabitacion($habitacionesGestor)
 
         // Validar que el número de habitación sea solo dígitos
         if (!preg_match('/^\d+$/', $numero)) {
-            echo "Error: El número de habitación debe ser un valor numérico.\n";
+            echo "Error: El número de habitación debe ser un número entero.\n";
             continue; // Vuelve a solicitar el número
         }
 

@@ -251,7 +251,7 @@ function modificarUsuario($usuario, $esAdministrador = false)
     while (true) {
         echo 'Introduce la nueva clave (deja vacío para mantener la actual): ';
         $clave = trim(fgets(STDIN));
-        if (preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) { 
+        if ($clave === "" || preg_match("/^[a-zA-Z0-9]{4,8}$/", $clave)) { 
             break; 
         } else {
             echo "La clave debe contener solo letras y/o números y tener entre 4 y 8 caracteres. Por favor, intente nuevamente.\n";
