@@ -53,7 +53,7 @@ function menuAdminUsuarios()
                 break;
             case 2:
                 modificarUsuario($usuariosGestor, true);
-                return;
+                break;
             case 3:
                 eliminaUsuario($usuariosGestor, $reservaControlador);
                 break;
