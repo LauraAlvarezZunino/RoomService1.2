@@ -196,7 +196,18 @@ class ReservaControlador
             return $reservasAsociadas;
         }
  
-
+        function verificarDisponibilidad($numeroHabitacion, $fechaInicio, $fechaFin, $excluirReservaId = null)
+{
+    foreach ($this->reservas as $reserva) {
+        if ($reserva->getHabitacion()->getNumero() == $numeroHabitacion && $reserva->getId() != $excluirReservaId) {
+            $solapa = ($fechaInicio < $reserva->getFechaFin() && $fechaFin > $reserva->getFechaInicio());
+            if ($solapa) {
+                return true; // Habitación ocupada
+            }
+        }
+    }
+    return false; // Habitación disponible
+}
     
     
     public function guardarEnJSON()

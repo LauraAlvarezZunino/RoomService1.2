@@ -2,8 +2,8 @@
     "reservas": [
         {
             "id": 16,
-            "fechaInicio": "2025-01-25",
-            "fechaFin": "2025-01-26",
+            "fechaInicio": "2025-02-25",
+            "fechaFin": "2025-02-26",
             "habitacion": "1",
             "costo": 600000,
             "usuarioDni": "111111"
@@ -30,6 +30,14 @@
             "fechaFin": "2025-07-24",
             "habitacion": "10",
             "costo": 68000,
+            "usuarioDni": "36608470"
+        },
+        {
+            "id": 24,
+            "fechaInicio": "2025-02-25",
+            "fechaFin": "2025-02-26",
+            "habitacion": "9",
+            "costo": 34000,
             "usuarioDni": "36608470"
         }
     ]

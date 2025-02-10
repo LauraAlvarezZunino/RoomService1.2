@@ -22,27 +22,70 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     echo 'Habitación actual: ' . $reserva->getHabitacion()->getNumero() . "\n";
     echo 'Costo actual: $' . $reserva->getCosto() . "\n";
 
-    echo 'Ingrese la nueva fecha de inicio (YYYY-MM-DD) o deje vacío para mantener la actual: ';
-    $nuevaFechaInicio = trim(fgets(STDIN));
-    $nuevaFechaInicio = $nuevaFechaInicio ?: $reserva->getFechaInicio();
+    // Solicitar nueva fecha de inicio
+    $nuevaFechaInicio = '';
+    while (true) {
+        echo 'Ingrese la nueva fecha de inicio (YYYY-MM-DD) o deje vacío para mantener la actual: ';
+        $nuevaFechaInicio = trim(fgets(STDIN));
+        $fechaActual = date('Y-m-d');
 
-    echo 'Ingrese la nueva fecha de fin (YYYY-MM-DD) o deje vacío para mantener la actual: ';
-    $nuevaFechaFin = trim(fgets(STDIN));
-    $nuevaFechaFin = $nuevaFechaFin ?: $reserva->getFechaFin();
+        if (empty($nuevaFechaInicio)) {
+            $nuevaFechaInicio = $reserva->getFechaInicio();
+            break;
+        }
 
-    // Aquí agregar las validaciones y cambios de fechas...
-
-    echo 'Ingrese el nuevo número de habitación o deje vacío para mantener la actual: ';
-    $nuevoNumeroHabitacion = trim(fgets(STDIN));
-    $nuevaHabitacion = $nuevoNumeroHabitacion
-        ? $habitacionesGestor->buscarHabitacionPorNumero($nuevoNumeroHabitacion)
-        : $reserva->getHabitacion();
-
-    if (!$nuevaHabitacion) {
-        echo "Habitación no encontrada.\n";
-        return;
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $nuevaFechaInicio) && strtotime($nuevaFechaInicio) > strtotime($fechaActual)) {
+            break;
+        } else {
+            echo "La fecha de inicio debe tener el formato YYYY-MM-DD y ser posterior a la fecha actual. Por favor, ingrese una fecha válida.\n";
+        }
     }
 
+    // Solicitar nueva fecha de fin
+    $nuevaFechaFin = '';
+    while (true) {
+        echo 'Ingrese la nueva fecha de fin (YYYY-MM-DD) o deje vacío para mantener la actual: ';
+        $nuevaFechaFin = trim(fgets(STDIN));
+
+        if (empty($nuevaFechaFin)) {
+            $nuevaFechaFin = $reserva->getFechaFin();
+            break;
+        }
+
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $nuevaFechaFin) && strtotime($nuevaFechaFin) > strtotime($nuevaFechaInicio)) {
+            break;
+        } else {
+            echo "La fecha de fin debe tener el formato YYYY-MM-DD y ser posterior a la fecha de inicio. Por favor, ingrese una fecha válida.\n";
+        }
+    }
+
+    // Solicitar nueva habitación
+    $nuevaHabitacion = null;
+    while (true) {
+        echo 'Ingrese el nuevo número de habitación o deje vacío para mantener la actual: ';
+        $nuevoNumeroHabitacion = trim(fgets(STDIN));
+
+        if (empty($nuevoNumeroHabitacion)) {
+            $nuevaHabitacion = $reserva->getHabitacion();
+            break;
+        }
+
+        $nuevaHabitacion = $habitacionesGestor->buscarHabitacionPorNumero($nuevoNumeroHabitacion);
+        if (!$nuevaHabitacion) {
+            echo "Habitación no encontrada.\n";
+            continue;
+        }
+
+        // Verificar si la habitación está disponible en las nuevas fechas
+        $habitacionOcupada = $reservasGestor->verificarDisponibilidad($nuevaHabitacion->getNumero(), $nuevaFechaInicio, $nuevaFechaFin, $reserva->getId());
+        if ($habitacionOcupada) {
+            echo "La habitación seleccionada no está disponible en las fechas indicadas.\n";
+        } else {
+            break;
+        }
+    }
+
+    // Calcular el nuevo costo
     $nuevoCosto = calcularCostoReserva($nuevaFechaInicio, $nuevaFechaFin, $nuevaHabitacion->getPrecio());
 
     // Actualizar la reserva con los nuevos valores
@@ -62,6 +105,7 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     $reservasGestor->guardarEnJSON();
     echo 'Reserva actualizada correctamente. Nuevo costo: $' . $nuevoCosto . "\n";
 }
+
 
 function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
 {
