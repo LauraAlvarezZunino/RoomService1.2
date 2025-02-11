@@ -183,6 +183,6 @@ function eliminaUsuario($usuariosGestor, $reservaControlador)
     if ($usuariosGestor->eliminarUsuario($idEliminado)) {
         echo "Usuario con ID {$idEliminado} y sus reservas han sido eliminados correctamente.\n";
     } else {
-        echo "No se pudo eliminar el usuario con ID {$idEliminado}. Puede que no exista.\n";
+        echo "No se pudo eliminar el usuario con ID {$idEliminado}.\n";
     }
 }
