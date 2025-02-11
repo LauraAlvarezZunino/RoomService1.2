@@ -1,5 +1,5 @@
 <?php
-include_once 'Modelo/notificacion.php';
+require_once 'Modelo/notificacion.php';
 class NotificacionControlador
 {
     private $archivoNotificaciones;
@@ -38,11 +38,11 @@ class NotificacionControlador
             return isset($notificacion['reserva_id']) && $notificacion['reserva_id'] == $reservaId;
         });
 
-        return array_values($notificacionesReserva); // Reindexa el array
+        return array_values($notificacionesReserva); // Reindexamos el array
     }
 
 
-    // Mostrar todas las notificaciones de un usuario específico
+
     public function mostrarNotificacionesPorDni($dni)
     {
         $notificaciones = $this->cargarNotificaciones();
@@ -50,12 +50,12 @@ class NotificacionControlador
             return isset($notificacion['usuario_dni']) && $notificacion['usuario_dni'] == $dni;
         });
 
-        // Verificar si hay notificaciones para el usuario
+        
         if (empty($notificacionesUsuario)) {
             return "No hay notificaciones para su usuario";
         }
 
-        return array_values($notificacionesUsuario); // Reindexa el array si hay notificaciones
+        return array_values($notificacionesUsuario); 
     }
 
 

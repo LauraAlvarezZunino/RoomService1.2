@@ -1,8 +1,8 @@
 <?php
 
-include_once 'Modelo/reserva.php';
-include_once 'usuarioControlador.php';
-include_once 'habitacionControlador.php';
+require_once 'Modelo/reserva.php';
+require_once 'usuarioControlador.php';
+require_once 'habitacionControlador.php';
 
 class ReservaControlador
 {

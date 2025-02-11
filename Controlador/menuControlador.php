@@ -22,7 +22,7 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     echo 'Habitación actual: ' . $reserva->getHabitacion()->getNumero() . "\n";
     echo 'Costo actual: $' . $reserva->getCosto() . "\n";
 
-    // Solicitar nueva fecha de inicio
+    
     $nuevaFechaInicio = '';
     while (true) {
         echo 'Ingrese la nueva fecha de inicio (YYYY-MM-DD) o deje vacío para mantener la actual: ';
@@ -41,7 +41,7 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
         }
     }
 
-    // Solicitar nueva fecha de fin
+
     $nuevaFechaFin = '';
     while (true) {
         echo 'Ingrese la nueva fecha de fin (YYYY-MM-DD) o deje vacío para mantener la actual: ';
@@ -59,7 +59,7 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
         }
     }
 
-    // Solicitar nueva habitación
+
     $nuevaHabitacion = null;
     while (true) {
         echo 'Ingrese el nuevo número de habitación o deje vacío para mantener la actual: ';
@@ -97,7 +97,7 @@ function modificarReserva($reservasGestor, $habitacionesGestor, $esAdmin = false
     // Agregar notificación si es un administrador
     if ($esAdmin) {
         $mensaje = "Tu reserva (ID: {$reserva->getId()}) fue modificada por un administrador.";
-        $usuarioDni = $usuario ? $usuario->getDni() : $reserva->getUsuarioDni(); // Si no hay usuario, usa el DNI del dueño original
+        $usuarioDni = $usuario ? $usuario->getDni() : $reserva->getUsuarioDni(); 
         $notificacion = new Notificacion($reserva->getId(), $mensaje, $usuarioDni);
         $notificacionControlador->guardarNotificacion($notificacion);
     }
@@ -124,7 +124,6 @@ function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
             echo 'Habitación: ' . $reserva->getHabitacion()->getNumero() . ' (' . $reserva->getHabitacion()->getTipo() . ")\n";
             echo 'Costo Total: $' . $reserva->getCosto() . "\n";
 
-            // Mostrar notificaciones correctamente
             $notificacionesReserva = $notificacionControlador->mostrarNotificaciones($reserva->getId());
 
             // Filtrar y eliminar duplicados de notificaciones
@@ -147,7 +146,7 @@ function mostrarReservas($reservasGestor, $esAdmin = false, $usuario = null)
     }
 }
 
-// Función eliminarReserva
+
 function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
 {
     echo 'Ingrese el ID de la reserva que desea eliminar: ';
@@ -160,7 +159,7 @@ function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
         return;
     }
 
-    // Crear y guardar notificación si es un administrador
+    
     if ($esAdmin) {
         $notificacionControlador = new NotificacionControlador();
         $mensaje = "Tu reserva (ID: {$reserva->getId()}) fue eliminada por un administrador.";
@@ -172,7 +171,7 @@ function eliminarReserva($reservasGestor, $usuario = null, $esAdmin = false)
         $notificacionControlador->guardarNotificacion($notificacion);
     }
 
-    // Eliminar la reserva
+   
     $reservasGestor->eliminarReserva($idEliminar);
     echo "Reserva eliminada con éxito.\n";
 }
@@ -185,7 +184,7 @@ function modificarUsuario($usuario, $esAdministrador = false)
     global $dniGuardado;
     $usuariosGestor = new UsuarioControlador;
 
-    // Si no es administrador, obtener usuario por su propio DNI
+  
     if (!$esAdministrador) {
         $usuario = $usuariosGestor->obtenerUsuarioPorDni($dniGuardado);
         if (!$usuario) {
@@ -211,7 +210,7 @@ function modificarUsuario($usuario, $esAdministrador = false)
     echo "Email actual: {$usuario->getEmail()}\n";
     echo "Teléfono actual: {$usuario->getTelefono()}\n";
 
-    // Pedir nuevo nombre
+   
     while (true) {
         echo 'Introduce el nuevo nombre (deja vacío para mantener el actual): ';
         $nombreApellido = trim(fgets(STDIN));
@@ -223,7 +222,6 @@ function modificarUsuario($usuario, $esAdministrador = false)
         }
     }
 
-    // Pedir nuevo email
     while (true) {
         echo 'Introduce el nuevo email (deja vacío para mantener el actual): ';
         $email = trim(fgets(STDIN));
@@ -235,7 +233,6 @@ function modificarUsuario($usuario, $esAdministrador = false)
         }
     }
 
-    // Pedir nuevo teléfono
     while (true) {
         echo 'Introduce el nuevo teléfono (deja vacío para mantener el actual): ';
         $telefono = trim(fgets(STDIN));
@@ -247,7 +244,6 @@ function modificarUsuario($usuario, $esAdministrador = false)
         }
     }
 
-    // Pedir nueva clave
     while (true) {
         echo 'Introduce la nueva clave (deja vacío para mantener la actual): ';
         $clave = trim(fgets(STDIN));

@@ -4,60 +4,61 @@
 
 function crearReserva($dniGuardado, $habitacionesGestor, $reservasGestor)
 {
-    global $dniGuardado; // Declarar la variable global
+    global $dniGuardado;
 
     $tipoHabitacion = solicitarTipoHabitacion();
     $habitacionesDisponibles = $habitacionesGestor->buscarPorTipo($tipoHabitacion);
 
     if (empty($habitacionesDisponibles)) {
         echo "No se encontraron habitaciones disponibles del tipo solicitado.\n";
-        return; // Salir si no hay habitaciones disponibles
+        return;
     }
 
     mostrarHabitacionesDisponibles($habitacionesDisponibles);
     $habitacionSeleccionada = null;
 
     while (!$habitacionSeleccionada) {
-        // Permitir al usuario seleccionar una habitación o salir
+
         echo "Ingrese el número de habitación o escriba 'salir' para volver al menú: ";
         $entradaUsuario = trim(fgets(STDIN));
 
         if (strtolower($entradaUsuario) === 'salir') {
             echo "Volviendo al menú...\n";
-            return; // Terminar la función y regresar al menú
+            return;
         }
 
         $habitacionSeleccionada = $habitacionesGestor->buscarHabitacionPorNumero($entradaUsuario);
 
         if (!$habitacionSeleccionada || strtolower($habitacionSeleccionada->getTipo()) !== strtolower($tipoHabitacion)) {
             echo "Número de habitación no válido o no coincide con el tipo seleccionado. Intente nuevamente.\n";
-            $habitacionSeleccionada = null; // Reiniciar para volver a pedir
+            $habitacionSeleccionada = null; // Reinicia para volver a pedir
         }
     }
 
     while (true) {
-        // Solicitar fechas de reserva
+
         [$fechaInicio, $fechaFin] = solicitarFechasReserva();
         $costo = calcularCostoReserva($fechaInicio, $fechaFin, $habitacionSeleccionada->getPrecio());
         $reservaId = $reservasGestor->generarNuevoId();
         $reserva = new Reserva($reservaId, $fechaInicio, $fechaFin, $habitacionSeleccionada, $costo, $dniGuardado);
 
-        // Intentar agregar la reserva
+
         $reservaExitosa = $reservasGestor->agregarReserva($reserva);
+        
         if ($reservaExitosa) {
             echo "Reserva realizada con éxito.\n";
-            return; // Salir tras el éxito
+            return;
         } else {
-            $habitacionSeleccionada = null; // Reiniciar la selección de habitación
+            $habitacionSeleccionada = null; // Reiniciamos la selección de habitación
 
-            // Permitir al usuario seleccionar otra habitación o salir
+           
             while (!$habitacionSeleccionada) {
                 echo "Ingrese el número de habitación o escriba 'salir' para volver al menú: ";
                 $entradaUsuario = trim(fgets(STDIN));
 
                 if (strtolower($entradaUsuario) === 'salir') {
                     echo "Volviendo al menú...\n";
-                    return; // Terminar la función y regresar al menú
+                    return; 
                 }
 
                 $habitacionSeleccionada = $habitacionesGestor->buscarHabitacionPorNumero($entradaUsuario);
@@ -201,5 +202,5 @@ function registrarse($usuariosGestor)
     $usuariosGestor->crearUsuario($nombreApellido, $dni, $email, $telefono, $clave);
     echo "Usuario agregado exitosamente.\n";
 
-    menuUsuario(); // vuelve al menú principal
+    menuUsuario();
 }

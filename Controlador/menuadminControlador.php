@@ -134,17 +134,17 @@ function eliminaHabitacion($habitacionesGestor)
         echo 'Ingrese el número de la habitación que desea eliminar: ';
         $numero = trim(fgets(STDIN));
 
-        // Validar que el número de habitación sea solo dígitos
+       
         if (!preg_match('/^\d+$/', $numero)) {
             echo "Error: El número de habitación debe ser un número entero.\n";
-            continue; // Vuelve a solicitar el número
+            continue; 
         }
 
-        // Llamar a eliminarHabitacion y mostrar el mensaje devuelto
+       
         $resultado = $habitacionesGestor->eliminarHabitacion($numero);
-        echo $resultado . "\n"; // Muestra el mensaje devuelto por eliminarHabitacion
+        echo $resultado . "\n"; 
 
-        break; // Sale del bucle después de intentar eliminar la habitación
+        break; 
     }
 }
 
@@ -160,30 +160,26 @@ function mostrarUsuarios($usuariosGestor)
 function eliminaUsuario($usuariosGestor, $reservaControlador)
 {
     echo 'Ingrese el ID del usuario a eliminar: ';
-    $idEliminado = trim(fgets(STDIN)); // Captura el ID del usuario a eliminar
+    $idEliminado = trim(fgets(STDIN)); 
 
-    // Obtener el usuario por ID
     $usuario = $usuariosGestor->obtenerUsuarioPorId($idEliminado);
 
     if (!$usuario) {
         echo "El usuario con ID {$idEliminado} no existe.\n";
-        return; // Si no encontramos el usuario, terminamos la función
+        return; 
     }
 
-    // Obtenemos el DNI del usuario
     $dniUsuario = $usuario->getDni();
 
-    // Obtener todas las reservas del usuario
     $reservas = $reservaControlador->obtenerReservas();
-
-    // Eliminar todas las reservas asociadas al DNI
+//primero borramos la reserva
     foreach ($reservas as $reserva) {
         if ($reserva->getUsuarioDni() == $dniUsuario) {
             $reservaControlador->eliminarReserva($reserva->getId());
         }
     }
 
-    // Ahora eliminamos al usuario
+    // desp eliminamos al usuario
     if ($usuariosGestor->eliminarUsuario($idEliminado)) {
         echo "Usuario con ID {$idEliminado} y sus reservas han sido eliminados correctamente.\n";
     } else {

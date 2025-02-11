@@ -3,13 +3,13 @@ class Notificacion
 {
     private $reservaId;
     private $mensaje;
-    private $usuarioDni;  // Agregamos el campo para el DNI del usuario
+    private $usuarioDni;  
 
     public function __construct($reservaId, $mensaje, $usuarioDni)
     {
         $this->reservaId = $reservaId;
         $this->mensaje = $mensaje;
-        $this->usuarioDni = $usuarioDni;  // Inicializamos el DNI del usuario
+        $this->usuarioDni = $usuarioDni;  
     }
 
     public function getReservaId()

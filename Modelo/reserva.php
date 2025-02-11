@@ -1,6 +1,6 @@
 <?php
 
-include_once 'Controlador/habitacionControlador.php';
+require_once 'Controlador/habitacionControlador.php';
 
 class Reserva
 {
@@ -88,13 +88,13 @@ class Reserva
             'id' => $reserva->getId(),
             'Fecha inicio' => $reserva->getFechaInicio(),
             'Fecha fin' => $reserva->getFechaFin(),
-            'Habitacion' => $reserva->getHabitacion()->getNumero(), // Asegúrate de que devuelva el número
+            'Habitacion' => $reserva->getHabitacion()->getNumero(), 
             'Costo' => $reserva->getCosto(),
             'Reservado por DNI' => $reserva->getUsuarioDni(),
         ];
     }
 
-    //Habitación: {$this->habitacion->getNumero()} se agrega para mostrar hab en vez de objeto 
+    //Habitación: {$this->habitacion->getNumero()}  para mostrar hab en vez de objeto 
     public function __toString()
     {
         return "ID: {$this->id}, Fecha Inicio: {$this->fechaInicio}, Fecha Fin: {$this->fechaFin}, Habitacion: {$this->habitacion->getNumero()}, Costo: $ {$this->costo}, Reservado por dni:{$this->usuarioDni}";

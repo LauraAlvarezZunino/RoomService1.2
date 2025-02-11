@@ -1,11 +1,10 @@
 <?php
 
-$dniGuardado = null; // variable global
+$dniGuardado = null;
 function menuUsuario()
 {
     global $dniGuardado;
 
-    // Inicializar los gestores necesarios
     $usuariosGestor = new UsuarioControlador;
     $habitacionesGestor = new HabitacionControlador;
     $reservasGestor = new ReservaControlador($habitacionesGestor);
@@ -31,16 +30,13 @@ function menuUsuario()
             echo 'Ingrese su clave para continuar: ';
             $clave = trim(fgets(STDIN));
 
-            // Busca al usuario por DNI y valida que coincida la clave
             $usuario = $usuariosGestor->obtenerUsuarioPorDni($dni);
 
             if ($usuario && $usuario->getClave() === $clave) {
-                // Si se encuentra un usuario y la clave coincide, accede al menú
                 menuUsuarioRegistrado($usuario, $habitacionesGestor, $reservasGestor, $usuariosGestor, $notificacionControlador);
             } else {
-                // Si no se encuentra o la clave no coincide, muestra un mensaje de error
                 echo "DNI o clave incorrectos. Inténtelo de nuevo.\n";
-                menuUsuario(); // Redirige al menú principal
+                menuUsuario();
             }
 
 
