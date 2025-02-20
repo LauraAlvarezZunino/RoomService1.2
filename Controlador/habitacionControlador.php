@@ -1,7 +1,7 @@
 <?php
 
 require_once 'Modelo/habitacion.php';
-require_once 'Controlador/reservaControlador.php'; // Asegúrate de incluir el controlador de reservas
+require_once 'Controlador/reservaControlador.php'; 
 
 class HabitacionControlador
 {
@@ -9,7 +9,7 @@ class HabitacionControlador
 
     private $archivoJson = 'habitacion.json';
 
-    private $reservasControlador; // Controlador de reservas
+    private $reservasControlador; 
 
     public function __construct()
     {
